@@ -30,6 +30,8 @@ func TestNextToken(t *testing.T) {
 		"foo bar"
 		[1, 2];
 		{"foo": "bar"}
+		25.
+		3.14
 	`
 
 	tests := []struct {
@@ -122,6 +124,8 @@ func TestNextToken(t *testing.T) {
 		{token.Colon, ":"},
 		{token.String, "bar"},
 		{token.RightBrace, "}"},
+		{token.Float, "25."},
+		{token.Float, "3.14"},
 		{token.EOF, ""},
 	}
 
@@ -130,7 +134,7 @@ func TestNextToken(t *testing.T) {
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokenType wrong. expected=%q, got=%q", i, tt.expectedType, tok.Type)
+			t.Fatalf("tests[%d] - tokenType wrong. expected=%q, got=%q (%q)", i, tt.expectedType, tok.Type, tok.Literal)
 		}
 
 		if tok.Literal != tt.expectedLiteral {

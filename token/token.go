@@ -14,7 +14,8 @@ const (
 	// Identifiers + Literals
 	Identifier = "Identifier" // add, x ,y, ...
 	Int        = "Int"        // 123456
-	String     = "String"     // "x", "y"
+	Float      = "Float"
+	String     = "String" // "x", "y"
 
 	// Operators
 	Assign   = "="
