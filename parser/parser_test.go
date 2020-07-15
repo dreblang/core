@@ -17,6 +17,7 @@ func TestLetStatement(t *testing.T) {
 		{"let x = 5;", "x", 5},
 		{"let y = true;", "y", true},
 		{"let foobar = y;", "foobar", "y"},
+		{"let a = 3.14;", "a", 3.14},
 	}
 
 	for _, tt := range tests {
@@ -726,6 +727,21 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+func testFloatLiteral(t *testing.T, il ast.Expression, value float64) bool {
+	flt, ok := il.(*ast.FloatLiteral)
+	if !ok {
+		t.Errorf("il not %T. got=%T", &ast.FloatLiteral{}, il)
+		return false
+	}
+
+	if flt.Value != value {
+		t.Errorf("float.Value not %f. got=%f", value, flt.Value)
+		return false
+	}
+
+	return true
+}
+
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	identifier, ok := exp.(*ast.Identifier)
 	if !ok {
@@ -772,6 +788,8 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		return testIntegerLiteral(t, exp, int64(v))
 	case int64:
 		return testIntegerLiteral(t, exp, v)
+	case float64:
+		return testFloatLiteral(t, exp, v)
 	case string:
 		return testIdentifier(t, exp, v)
 	case bool:
