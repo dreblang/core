@@ -15,6 +15,7 @@ type ObjectType string
 
 const (
 	IntegerObj          = "Integer"
+	FloatObj            = "Float"
 	BooleanObj          = "Boolean"
 	NullObj             = "Null"
 	ReturnValueObj      = "ReturnValue"
@@ -50,6 +51,16 @@ func (i *Integer) Type() ObjectType { return IntegerObj }
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) HashKey() HashKey {
 	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
+}
+
+type Float struct {
+	Value float64
+}
+
+func (i *Float) Type() ObjectType { return FloatObj }
+func (i *Float) Inspect() string  { return fmt.Sprintf("%f", i.Value) }
+func (i *Float) HashKey() HashKey {
+	return HashKey{Type: i.Type(), Value: 0} //FIXME
 }
 
 type Boolean struct {
