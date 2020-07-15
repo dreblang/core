@@ -9,10 +9,10 @@ import (
 	"github.com/dreblang/core/parser"
 )
 
-func TestEvalIntegerExpression(t *testing.T) {
+func TestEvalNumericExpression(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected int64
+		expected interface{}
 	}{
 		{"5", 5},
 		{"10", 10},
@@ -29,11 +29,13 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3 * 3 * 3 + 10", 37},
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+		{"1.1 + 2.2", float64(1.1) + float64(2.2)},
+		{"-5.3", -5.3},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testNumberObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -104,9 +106,13 @@ func TestIfElseExpressions(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		integer, ok := tt.expected.(int)
-		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+
+		if integer, ok := tt.expected.(int); ok {
+			testNumberObject(t, evaluated, int64(integer))
+
+		} else if float, ok := tt.expected.(float64); ok {
+			testNumberObject(t, evaluated, float64(float))
+
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -135,7 +141,7 @@ func TestReturnStatements(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testNumberObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -189,7 +195,7 @@ func TestLetStatements(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+		testNumberObject(t, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -230,7 +236,7 @@ func TestFunctionApplication(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+		testNumberObject(t, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -295,7 +301,7 @@ func TestBuiltinFunctions(t *testing.T) {
 
 		switch expected := tt.expected.(type) {
 		case int:
-			testIntegerObject(t, evaluated, int64(expected))
+			testNumberObject(t, evaluated, int64(expected))
 		case nil:
 			testNullObject(t, evaluated)
 		case string:
@@ -321,7 +327,7 @@ func TestBuiltinFunctions(t *testing.T) {
 			}
 
 			for i, element := range expected {
-				testIntegerObject(t, array.Elements[i], int64(element))
+				testNumberObject(t, array.Elements[i], int64(element))
 			}
 		}
 	}
@@ -340,9 +346,9 @@ func TestArrayLiterals(t *testing.T) {
 		t.Fatalf("array has wrong num of elements. got=%d", len(result.Elements))
 	}
 
-	testIntegerObject(t, result.Elements[0], 1)
-	testIntegerObject(t, result.Elements[1], 4)
-	testIntegerObject(t, result.Elements[2], 6)
+	testNumberObject(t, result.Elements[0], 1)
+	testNumberObject(t, result.Elements[1], 4)
+	testNumberObject(t, result.Elements[2], 6)
 }
 
 func TestArrayIndexExpressions(t *testing.T) {
@@ -396,7 +402,8 @@ func TestArrayIndexExpressions(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testNumberObject(t, evaluated, int64(integer))
+
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -441,7 +448,7 @@ func TestHashLiterals(t *testing.T) {
 			t.Errorf("no pair for given key in pairs")
 		}
 
-		testIntegerObject(t, pair.Value, expectedValue)
+		testNumberObject(t, pair.Value, expectedValue)
 	}
 }
 
@@ -484,7 +491,7 @@ func TestHashIndexExpressions(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testNumberObject(t, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -500,19 +507,37 @@ func testEval(input string) object.Object {
 	return Eval(program, env)
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
-	result, ok := obj.(*object.Integer)
-	if !ok {
-		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
-		return false
+func testNumberObject(t *testing.T, obj object.Object, expected interface{}) bool {
+	if intNum, ok := expected.(int64); ok {
+		result, ok := obj.(*object.Integer)
+		if !ok {
+			t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
+			return false
+		}
+
+		if result.Value != intNum {
+			t.Errorf("object has wrong value. got=%d, want=%d", result.Value, intNum)
+			return false
+		}
+
+		return true
+
+	} else if floatNum, ok := expected.(float64); ok {
+		result, ok := obj.(*object.Float)
+		if !ok {
+			t.Errorf("object is not Float. got=%T (%+v)", obj, obj)
+			return false
+		}
+
+		if result.Value != floatNum {
+			t.Errorf("object has wrong value. got=%v, want=%v", result.Value, floatNum)
+			return false
+		}
+
+		return true
 	}
 
-	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%d, want=%d", result.Value, expected)
-		return false
-	}
-
-	return true
+	return false
 }
 
 func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
