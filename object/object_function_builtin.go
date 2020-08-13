@@ -8,3 +8,4 @@ type Builtin struct {
 
 func (b *Builtin) Type() ObjectType { return BuiltinObj }
 func (b *Builtin) Inspect() string  { return "builtin function" }
+func (b *Builtin) String() string   { return "builtin" }

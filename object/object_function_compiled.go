@@ -14,5 +14,6 @@ type CompiledFunction struct {
 
 func (cf *CompiledFunction) Type() ObjectType { return CompiledFunctionObj }
 func (cf *CompiledFunction) Inspect() string {
-	return fmt.Sprintf("CopiledFunction[%p]", cf)
+	return fmt.Sprintf("CompiledFunction[%p]", cf)
 }
+func (cf *CompiledFunction) String() string { return "cfunc" }

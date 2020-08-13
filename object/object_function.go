@@ -31,3 +31,6 @@ func (f *Function) Inspect() string {
 
 	return out.String()
 }
+func (f *Function) String() string {
+	return "func"
+}

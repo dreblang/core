@@ -6,3 +6,4 @@ type Error struct {
 
 func (e *Error) Type() ObjectType { return ErrorObj }
 func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
+func (e *Error) String() string   { return e.Message }

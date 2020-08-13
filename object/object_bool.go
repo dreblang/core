@@ -21,3 +21,9 @@ func (b *Boolean) HashKey() HashKey {
 
 	return HashKey{Type: b.Type(), Value: value}
 }
+func (b *Boolean) String() string {
+	if b.Value {
+		return "true"
+	}
+	return "false"
+}

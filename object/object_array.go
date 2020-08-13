@@ -24,3 +24,6 @@ func (ao *Array) Inspect() string {
 
 	return out.String()
 }
+func (ao *Array) String() string {
+	return "array"
+}

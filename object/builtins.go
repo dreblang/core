@@ -1,6 +1,9 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 const (
 	BuiltinFuncNameLen   = "len"
@@ -9,6 +12,11 @@ const (
 	BuiltinFuncNameRest  = "rest"
 	BuiltinFuncNamePush  = "push"
 	BuiltinFuncNamePuts  = "puts"
+
+	// Type conversions
+	BuiltinFuncNameInt    = "int"
+	BuiltinFuncNameFloat  = "float"
+	BuiltinFuncNameString = "string"
 )
 
 var Builtins = []struct {
@@ -133,6 +141,67 @@ var Builtins = []struct {
 			newElements[length] = args[1]
 
 			return &Array{Elements: newElements}
+		},
+		},
+	},
+	{
+		BuiltinFuncNameInt,
+		&Builtin{Fn: func(args ...Object) Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			switch arg := args[0].(type) {
+			case *Integer:
+				return arg
+			case *Float:
+				return &Integer{Value: int64(arg.Value)}
+			case *String:
+				val, err := strconv.ParseInt(arg.Value, 10, 64)
+				if err != nil {
+					return newError("Conversion to int failed!")
+				}
+				return &Integer{Value: val}
+			default:
+				return newError("argument to %q not supported, got %s",
+					BuiltinFuncNameLen, args[0].Type())
+			}
+		},
+		},
+	},
+	{
+		BuiltinFuncNameFloat,
+		&Builtin{Fn: func(args ...Object) Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			switch arg := args[0].(type) {
+			case *Integer:
+				return &Float{Value: float64(arg.Value)}
+			case *Float:
+				return arg
+			case *String:
+				val, err := strconv.ParseFloat(arg.Value, 64)
+				if err != nil {
+					return newError("Conversion to float failed!")
+				}
+				return &Float{Value: val}
+			default:
+				return newError("argument to %q not supported, got %s",
+					BuiltinFuncNameLen, args[0].Type())
+			}
+		},
+		},
+	},
+	{
+		BuiltinFuncNameString,
+		&Builtin{Fn: func(args ...Object) Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			return &String{Value: args[0].String()}
 		},
 		},
 	},

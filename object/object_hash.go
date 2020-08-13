@@ -41,3 +41,4 @@ func (h *Hash) Inspect() string {
 
 	return out.String()
 }
+func (h *Hash) String() string { return "hash" }

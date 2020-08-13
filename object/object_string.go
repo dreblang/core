@@ -16,3 +16,4 @@ func (s *String) HashKey() HashKey {
 
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
 }
+func (s *String) String() string { return s.Value }

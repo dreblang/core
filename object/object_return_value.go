@@ -6,3 +6,4 @@ type ReturnValue struct {
 
 func (rv *ReturnValue) Type() ObjectType { return ReturnValueObj }
 func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
+func (rv *ReturnValue) String() string   { return rv.Value.String() }
