@@ -10,9 +10,10 @@ import (
 	"github.com/dreblang/core/object"
 	"github.com/dreblang/core/parser"
 	"github.com/dreblang/core/vm"
+	"github.com/ttacon/chalk"
 )
 
-const Prompt = "compiler /> "
+const Prompt = "jitc /> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -25,7 +26,7 @@ func Start(in io.Reader, out io.Writer) {
 	}
 
 	for {
-		fmt.Printf(Prompt)
+		fmt.Printf("%s%s%s", chalk.Blue, Prompt, chalk.ResetColor)
 		scanned := scanner.Scan()
 		if !scanned {
 			return
@@ -44,7 +45,9 @@ func Start(in io.Reader, out io.Writer) {
 		comp := compiler.NewWithState(symbolTable, constants)
 		err := comp.Compile(program)
 		if err != nil {
+			fmt.Printf("%s", chalk.Red)
 			fmt.Fprintf(out, "Woops! Compilation failed:\n %s\n", err)
+			fmt.Printf("%s", chalk.ResetColor)
 			continue
 		}
 
@@ -54,13 +57,21 @@ func Start(in io.Reader, out io.Writer) {
 		machine := vm.NewWithGlobalsStore(code, globals)
 		err = machine.Run()
 		if err != nil {
+			fmt.Printf("%s", chalk.Red)
 			fmt.Fprintf(out, "Woops! Executing bytecode failed:\n %s\n", err)
+			fmt.Printf("%s", chalk.ResetColor)
 			continue
 		}
 
 		lastPopped := machine.LastPoppedStackElem()
+		if lastPopped.Type() == object.ErrorObj {
+			fmt.Printf("%s", chalk.Red)
+		} else {
+			fmt.Printf("%s", chalk.Green)
+		}
 		io.WriteString(out, lastPopped.Inspect())
 		io.WriteString(out, "\n")
+		fmt.Printf("%s", chalk.ResetColor)
 	}
 }
 
