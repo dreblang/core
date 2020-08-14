@@ -18,3 +18,7 @@ func (c *Closure) Inspect() string {
 func (c *Closure) String() string {
 	return "closure"
 }
+
+func (obj *Closure) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

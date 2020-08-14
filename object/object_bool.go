@@ -27,3 +27,7 @@ func (b *Boolean) String() string {
 	}
 	return "false"
 }
+
+func (obj *Boolean) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

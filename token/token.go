@@ -34,6 +34,7 @@ const (
 	Comma     = ","
 	Semicolon = ";"
 	Colon     = ":"
+	Dot       = "."
 
 	LeftParen    = "("
 	RightParen   = ")"

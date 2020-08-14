@@ -17,6 +17,7 @@ const (
 	Sum           // +
 	Product       // *
 	Prefix        // -X or !X
+	Dot           // obj.member
 	Call          // myFunction(X)
 	Index         // array[index]
 )
@@ -32,6 +33,7 @@ var precedences = map[token.TokenType]int{
 	token.Asterisk:    Product,
 	token.LeftParen:   Call,
 	token.LeftBracket: Index,
+	token.Dot:         Dot,
 }
 
 type (
@@ -77,6 +79,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NotEqual, p.parseInfixExpression)
 	p.registerInfix(token.LessThan, p.parseInfixExpression)
 	p.registerInfix(token.GreaterThan, p.parseInfixExpression)
+	p.registerInfix(token.Dot, p.parseMemberExpression)
 	p.registerInfix(token.LeftParen, p.parseCallExpression)
 	p.registerInfix(token.LeftBracket, p.parseIndexExpression)
 
@@ -443,6 +446,18 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	precedence := p.currentPrecedence()
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
+	return expression
+}
+
+func (p *Parser) parseMemberExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InfixExpression{
+		Token:    p.currentToken,
+		Operator: p.currentToken.Literal,
+		Left:     left,
+	}
+	p.nextToken()
+	right := p.parseIdentifier()
+	expression.Right = right
 	return expression
 }
 

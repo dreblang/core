@@ -42,3 +42,7 @@ func (h *Hash) Inspect() string {
 	return out.String()
 }
 func (h *Hash) String() string { return "hash" }
+
+func (obj *Hash) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

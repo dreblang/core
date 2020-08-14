@@ -17,3 +17,7 @@ func (cf *CompiledFunction) Inspect() string {
 	return fmt.Sprintf("CompiledFunction[%p]", cf)
 }
 func (cf *CompiledFunction) String() string { return "cfunc" }
+
+func (obj *CompiledFunction) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

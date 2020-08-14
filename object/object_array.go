@@ -27,3 +27,7 @@ func (ao *Array) Inspect() string {
 func (ao *Array) String() string {
 	return "array"
 }
+
+func (obj *Array) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

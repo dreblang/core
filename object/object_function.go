@@ -34,3 +34,7 @@ func (f *Function) Inspect() string {
 func (f *Function) String() string {
 	return "func"
 }
+
+func (obj *Function) GetMember(name string) Object {
+	return newError("No member named [%s]", name)
+}

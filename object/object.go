@@ -22,4 +22,5 @@ type Object interface {
 	Type() ObjectType
 	Inspect() string
 	String() string
+	GetMember(name string) Object
 }

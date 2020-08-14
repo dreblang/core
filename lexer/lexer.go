@@ -59,6 +59,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.Semicolon, l.ch)
 	case ':':
 		tok = newToken(token.Colon, l.ch)
+	case '.':
+		tok = newToken(token.Dot, l.ch)
 	case '(':
 		tok = newToken(token.LeftParen, l.ch)
 	case ')':
@@ -74,6 +76,12 @@ func (l *Lexer) NextToken() token.Token {
 	case '"':
 		tok.Type = token.String
 		tok.Literal = l.readString()
+	case '\'':
+		tok.Type = token.String
+		tok.Literal = l.readString2()
+	case '`':
+		tok.Type = token.String
+		tok.Literal = l.readString3()
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -114,7 +122,38 @@ func (l *Lexer) readString() string {
 	pos := l.position + 1
 	for {
 		l.readChar()
-		if l.ch == '"' || l.ch == 0 {
+		if l.ch == '\\' {
+			l.readChar()
+			continue
+		} else if l.ch == '"' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[pos:l.position]
+}
+
+func (l *Lexer) readString2() string {
+	pos := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '\\' {
+			l.readChar()
+			continue
+		} else if l.ch == '\'' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[pos:l.position]
+}
+
+func (l *Lexer) readString3() string {
+	pos := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '\\' {
+			l.readChar()
+			continue
+		} else if l.ch == '`' || l.ch == 0 {
 			break
 		}
 	}
