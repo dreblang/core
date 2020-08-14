@@ -44,5 +44,10 @@ func (h *Hash) Inspect() string {
 func (h *Hash) String() string { return "hash" }
 
 func (obj *Hash) GetMember(name string) Object {
+	switch name {
+	case "length":
+		return &Integer{Value: int64(len(obj.Pairs))}
+	}
+
 	return newError("No member named [%s]", name)
 }

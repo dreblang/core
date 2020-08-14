@@ -19,5 +19,10 @@ func (s *String) HashKey() HashKey {
 func (s *String) String() string { return s.Value }
 
 func (obj *String) GetMember(name string) Object {
+	switch name {
+	case "length":
+		return &Integer{Value: int64(len(obj.Value))}
+	}
+
 	return newError("No member named [%s]", name)
 }

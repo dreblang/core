@@ -29,5 +29,10 @@ func (ao *Array) String() string {
 }
 
 func (obj *Array) GetMember(name string) Object {
+	switch name {
+	case "length":
+		return &Integer{Value: int64(len(obj.Elements))}
+	}
+
 	return newError("No member named [%s]", name)
 }
