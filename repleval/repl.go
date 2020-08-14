@@ -5,20 +5,22 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/ttacon/chalk"
+
 	"github.com/dreblang/core/evaluator"
 	"github.com/dreblang/core/lexer"
 	"github.com/dreblang/core/object"
 	"github.com/dreblang/core/parser"
 )
 
-const Prompt = "evaluator /> "
+const Prompt = "eval > "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	globalEnv := object.NewEnvironment()
 
 	for {
-		fmt.Printf(Prompt)
+		fmt.Printf("%s%s%s", chalk.Blue, Prompt, chalk.ResetColor)
 		scanned := scanner.Scan()
 		if !scanned {
 			return
@@ -36,8 +38,14 @@ func Start(in io.Reader, out io.Writer) {
 
 		result := evaluator.Eval(program, globalEnv)
 		if result != nil {
+			if result.Type() == object.ErrorObj {
+				fmt.Printf("%s", chalk.Red)
+			} else {
+				fmt.Printf("%s", chalk.Green)
+			}
 			io.WriteString(out, result.Inspect())
 			io.WriteString(out, "\n")
+			fmt.Printf("%s", chalk.ResetColor)
 		}
 	}
 }
