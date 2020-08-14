@@ -11,4 +11,8 @@ var builtins = map[string]*object.Builtin{
 	object.BuiltinFuncNameLast:  object.GetBuiltinByName(object.BuiltinFuncNameLast),
 	object.BuiltinFuncNameRest:  object.GetBuiltinByName(object.BuiltinFuncNameRest),
 	object.BuiltinFuncNamePush:  object.GetBuiltinByName(object.BuiltinFuncNamePush),
+
+	object.BuiltinFuncNameInt:    object.GetBuiltinByName(object.BuiltinFuncNameInt),
+	object.BuiltinFuncNameFloat:  object.GetBuiltinByName(object.BuiltinFuncNameFloat),
+	object.BuiltinFuncNameString: object.GetBuiltinByName(object.BuiltinFuncNameString),
 }

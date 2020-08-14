@@ -1,4 +1,4 @@
-package repl
+package replcompiler
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"github.com/dreblang/core/vm"
 )
 
-const Prompt = ">> "
+const Prompt = "compiler /> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
