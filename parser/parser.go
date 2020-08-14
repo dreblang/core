@@ -456,7 +456,7 @@ func (p *Parser) parseMemberExpression(left ast.Expression) ast.Expression {
 		Left:     left,
 	}
 	p.nextToken()
-	right := p.parseIdentifier()
+	right := p.parseStringLiteral()
 	expression.Right = right
 	return expression
 }

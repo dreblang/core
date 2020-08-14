@@ -77,6 +77,11 @@ func (vm *VM) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpMember:
+			err := vm.executeMemberOperation(op)
+			if err != nil {
+				return err
+			}
 		case code.OpTrue:
 			err := vm.push(True)
 			if err != nil {
@@ -375,6 +380,15 @@ func (vm *VM) execFloatFloatOperation(op code.Opcode, left, right *object.Float)
 	}
 
 	return vm.push(&object.Float{Value: result})
+}
+
+func (vm *VM) executeMemberOperation(op code.Opcode) error {
+	right := vm.pop()
+	left := vm.pop()
+
+	result := left.GetMember(right.String())
+	vm.push(result)
+	return nil
 }
 
 func (vm *VM) executeBinaryNumericOperation(op code.Opcode, left, right object.Object) error {
