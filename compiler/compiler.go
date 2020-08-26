@@ -204,10 +204,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		if c.lastInstructionIs(code.OpPop) {
-			c.removeLastPop()
-		}
-
 		c.emit(code.OpJump, blockStart)
 
 		afterConsequencePos := len(c.currentInstructions())
