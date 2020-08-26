@@ -91,6 +91,19 @@ func (c *Compiler) Compile(node ast.Node) error {
 			}
 			c.emit(code.OpGreaterThan)
 			return nil
+		} else if node.Operator == "=" {
+			symbol := c.symbolTable.Define(node.Left.String())
+			err := c.Compile(node.Right)
+			if err != nil {
+				return err
+			}
+
+			if symbol.Scope == GlobalScope {
+				c.emit(code.OpSetGlobal, symbol.Index)
+			} else {
+				c.emit(code.OpSetLocal, symbol.Index)
+			}
+			return nil
 		}
 
 		err := c.Compile(node.Left)

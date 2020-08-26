@@ -12,7 +12,8 @@ import (
 const (
 	_ int = iota
 	Lowest
-	Equals        // =
+	Assign        // =
+	Equals        // ==
 	LessOrGreater // < or >
 	Sum           // +
 	Product       // *
@@ -23,6 +24,7 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
+	token.Assign:      Assign,
 	token.Equal:       Equals,
 	token.NotEqual:    Equals,
 	token.LessThan:    LessOrGreater,
@@ -72,6 +74,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LeftBrace, p.parseHashLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
+	p.registerInfix(token.Assign, p.parseInfixExpression)
 	p.registerInfix(token.Plus, p.parseInfixExpression)
 	p.registerInfix(token.Minus, p.parseInfixExpression)
 	p.registerInfix(token.Slash, p.parseInfixExpression)
@@ -449,6 +452,18 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 	return expression
 }
+
+// func (p *Parser) parseAssignExpression(left ast.Expression) ast.Expression {
+// 	expression := &ast.InfixExpression{
+// 		Token:    p.currentToken,
+// 		Operator: p.currentToken.Literal,
+// 		Left:     left,
+// 	}
+// 	p.nextToken()
+// 	right := p.parseStringLiteral()
+// 	expression.Right = right
+// 	return expression
+// }
 
 func (p *Parser) parseMemberExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{

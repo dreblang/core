@@ -127,7 +127,9 @@ func (vm *VM) Run() error {
 			globalIndex := code.ReadUint16(ins[ip+1:])
 			vm.currentFrame().ip += 2
 
-			vm.globals[globalIndex] = vm.pop()
+			val := vm.pop()
+			vm.globals[globalIndex] = val
+			vm.push(val)
 		case code.OpGetGlobal:
 			globalIndex := code.ReadUint16(ins[ip+1:])
 			vm.currentFrame().ip += 2
@@ -200,8 +202,9 @@ func (vm *VM) Run() error {
 			vm.currentFrame().ip += 1
 
 			frame := vm.currentFrame()
-
-			vm.stack[frame.basePointer+int(localIndex)] = vm.pop()
+			val := vm.pop()
+			vm.stack[frame.basePointer+int(localIndex)] = val
+			vm.push(val)
 		case code.OpGetLocal:
 			localIndex := code.ReadUint8(ins[ip+1:])
 			vm.currentFrame().ip += 1

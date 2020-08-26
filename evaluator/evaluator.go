@@ -59,7 +59,20 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalPrefixExpression(node.Operator, right)
 
 	case *ast.InfixExpression:
-		if node.Operator != "." {
+		if node.Operator == "." {
+			left := Eval(node.Left, env)
+			if isError(left) {
+				return left
+			}
+			return evalMemberOperation(left, node.Right)
+		} else if node.Operator == "=" {
+			val := Eval(node.Right, env)
+			if isError(val) {
+				return val
+			}
+			env.Set(node.Left.String(), val)
+			return val
+		} else {
 			left := Eval(node.Left, env)
 			if isError(left) {
 				return left
@@ -70,11 +83,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			}
 			return evalInfixExpression(node.Operator, left, right)
 		}
-		left := Eval(node.Left, env)
-		if isError(left) {
-			return left
-		}
-		return evalMemberOperation(left, node.Right)
 
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
