@@ -54,7 +54,7 @@ func main() {
 
 		err = machine.Run()
 		if err != nil {
-			fmt.Sprintf("vm error: %s", err)
+			fmt.Printf("vm error: %s", err)
 			return
 		}
 
