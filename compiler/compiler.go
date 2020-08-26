@@ -176,6 +176,29 @@ func (c *Compiler) Compile(node ast.Node) error {
 
 		afterAlternative := len(c.currentInstructions())
 		c.changeOperand(jumpPos, afterAlternative)
+	case *ast.LoopExpression:
+		blockStart := len(c.currentInstructions())
+		err := c.Compile(node.Condition)
+		if err != nil {
+			return err
+		}
+
+		// Emit an `OpJumpNotTruthy` with a bogus value
+		jumpNotTruthyPos := c.emit(code.OpJumpNotTruthy, 9999)
+
+		err = c.Compile(node.Consequence)
+		if err != nil {
+			return err
+		}
+
+		if c.lastInstructionIs(code.OpPop) {
+			c.removeLastPop()
+		}
+
+		c.emit(code.OpJump, blockStart)
+
+		afterConsequencePos := len(c.currentInstructions())
+		c.changeOperand(jumpNotTruthyPos, afterConsequencePos)
 	case *ast.IndexExpression:
 		err := c.Compile(node.Left)
 		if err != nil {

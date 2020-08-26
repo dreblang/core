@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"log"
+
 	"github.com/dreblang/core/ast"
 	"github.com/dreblang/core/object"
 )
@@ -45,6 +47,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+
+	case *ast.LoopExpression:
+		return evalLoopExpression(node, env)
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
@@ -125,6 +130,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
+
+	default:
+		log.Println("Unknown expression!")
 	}
 
 	return nil

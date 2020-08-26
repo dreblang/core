@@ -51,6 +51,7 @@ const (
 	If       = "If"
 	Else     = "Else"
 	Return   = "Return"
+	Loop     = "Loop"
 )
 
 var keywords = map[string]TokenType{
@@ -61,6 +62,7 @@ var keywords = map[string]TokenType{
 	"if":     If,
 	"else":   Else,
 	"return": Return,
+	"loop":   Loop,
 }
 
 func LookupIdentifierType(identifier string) TokenType {

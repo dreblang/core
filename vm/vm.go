@@ -270,6 +270,10 @@ func (vm *VM) push(o object.Object) error {
 }
 
 func (vm *VM) pop() object.Object {
+	if vm.sp == 0 {
+		return object.NullObject
+	}
+
 	o := vm.stack[vm.sp-1]
 	vm.sp--
 	return o

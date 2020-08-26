@@ -65,6 +65,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.False, p.parseBoolean)
 	p.registerPrefix(token.LeftParen, p.parseGroupedExpression)
 	p.registerPrefix(token.If, p.parseIfExpression)
+	p.registerPrefix(token.Loop, p.parseLoopExpression)
 	p.registerPrefix(token.Function, p.parseFunctionLiteral)
 	p.registerPrefix(token.String, p.parseStringLiteral)
 	p.registerPrefix(token.LeftBracket, p.parseArrayLiteral)
@@ -530,4 +531,28 @@ func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
+}
+
+func (p *Parser) parseLoopExpression() ast.Expression {
+	expression := &ast.LoopExpression{Token: p.currentToken}
+
+	if !p.expectPeek(token.LeftParen) {
+		return nil
+	}
+
+	// get condition
+	p.nextToken()
+	expression.Condition = p.parseExpression(Lowest)
+
+	if !p.expectPeek(token.RightParen) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LeftBrace) {
+		return nil
+	}
+
+	expression.Consequence = p.parseBlockStatement()
+
+	return expression
 }

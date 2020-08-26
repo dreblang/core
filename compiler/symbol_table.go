@@ -37,6 +37,10 @@ func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
 }
 
 func (s *SymbolTable) Define(name string) Symbol {
+	if symbol, ok := s.Resolve(name); ok {
+		return symbol
+	}
+
 	symbol := Symbol{Name: name, Index: s.numDefinitions}
 	if s.Outer == nil {
 		symbol.Scope = GlobalScope
