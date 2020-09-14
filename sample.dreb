@@ -1,0 +1,10 @@
+loopfunc = fn(n) {
+	a = 0
+	sum = 0
+	loop (a < n) {
+		sum = a + sum
+		a = a + 1
+	}
+	return sum
+}
+loopfunc(10000000)
