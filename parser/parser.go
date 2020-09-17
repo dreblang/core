@@ -24,18 +24,20 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
-	token.Assign:      Assign,
-	token.Equal:       Equals,
-	token.NotEqual:    Equals,
-	token.LessThan:    LessOrGreater,
-	token.GreaterThan: LessOrGreater,
-	token.Plus:        Sum,
-	token.Minus:       Sum,
-	token.Slash:       Product,
-	token.Asterisk:    Product,
-	token.LeftParen:   Call,
-	token.LeftBracket: Index,
-	token.Dot:         Dot,
+	token.Assign:         Assign,
+	token.Equal:          Equals,
+	token.NotEqual:       Equals,
+	token.LessThan:       LessOrGreater,
+	token.LessOrEqual:    LessOrGreater,
+	token.GreaterThan:    LessOrGreater,
+	token.GreaterOrEqual: LessOrGreater,
+	token.Plus:           Sum,
+	token.Minus:          Sum,
+	token.Slash:          Product,
+	token.Asterisk:       Product,
+	token.LeftParen:      Call,
+	token.LeftBracket:    Index,
+	token.Dot:            Dot,
 }
 
 type (
@@ -82,7 +84,9 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.Equal, p.parseInfixExpression)
 	p.registerInfix(token.NotEqual, p.parseInfixExpression)
 	p.registerInfix(token.LessThan, p.parseInfixExpression)
+	p.registerInfix(token.LessOrEqual, p.parseInfixExpression)
 	p.registerInfix(token.GreaterThan, p.parseInfixExpression)
+	p.registerInfix(token.GreaterOrEqual, p.parseInfixExpression)
 	p.registerInfix(token.Dot, p.parseMemberExpression)
 	p.registerInfix(token.LeftParen, p.parseCallExpression)
 	p.registerInfix(token.LeftBracket, p.parseIndexExpression)

@@ -30,8 +30,12 @@ func (obj *Float) InfixOperation(operator string, other Object) Object {
 		return obj.Divide(other)
 	case token.LessThan:
 		return obj.LessThan(other)
+	case token.LessOrEqual:
+		return obj.LessOrEqual(other)
 	case token.GreaterThan:
 		return obj.GreaterThan(other)
+	case token.GreaterOrEqual:
+		return obj.GreaterOrEqual(other)
 	case token.Equal:
 		return obj.Equals(other)
 	case token.NotEqual:
@@ -108,12 +112,32 @@ func (obj *Float) LessThan(other Object) Object {
 	return newError("Could not perform arithmetic operation")
 }
 
+func (obj *Float) LessOrEqual(other Object) Object {
+	switch other.Type() {
+	case IntegerObj:
+		return NativeBoolToBooleanObject(obj.Value <= float64(other.(*Integer).Value))
+	case FloatObj:
+		return NativeBoolToBooleanObject(obj.Value <= other.(*Float).Value)
+	}
+	return newError("Could not perform arithmetic operation")
+}
+
 func (obj *Float) GreaterThan(other Object) Object {
 	switch other.Type() {
 	case IntegerObj:
 		return NativeBoolToBooleanObject(obj.Value > float64(other.(*Integer).Value))
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value > other.(*Float).Value)
+	}
+	return newError("Could not perform arithmetic operation")
+}
+
+func (obj *Float) GreaterOrEqual(other Object) Object {
+	switch other.Type() {
+	case IntegerObj:
+		return NativeBoolToBooleanObject(obj.Value >= float64(other.(*Integer).Value))
+	case FloatObj:
+		return NativeBoolToBooleanObject(obj.Value >= other.(*Float).Value)
 	}
 	return newError("Could not perform arithmetic operation")
 }
