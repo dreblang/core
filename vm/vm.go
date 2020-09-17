@@ -305,21 +305,6 @@ func (vm *VM) executeMemberOperation(op code.Opcode) error {
 }
 
 func (vm *VM) executeComparison(op code.Opcode) error {
-	// right := vm.pop()
-	// left := vm.pop()
-
-	// if left.Type() == object.IntegerObj || right.Type() == object.IntegerObj {
-	// 	return vm.executeIntegerComparison(op, left, right)
-	// }
-
-	// switch op {
-	// case code.OpEqual:
-	// 	return vm.push(object.NativeBoolToBooleanObject(right == left))
-	// case code.OpNotEqual:
-	// 	return vm.push(object.NativeBoolToBooleanObject(right != left))
-	// default:
-	// 	return fmt.Errorf("unknown operator: %d %s %s", op, left.Type(), right.Type())
-	// }
 	right := vm.pop()
 	left := vm.pop()
 
