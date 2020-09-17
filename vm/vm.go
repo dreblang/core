@@ -12,9 +12,9 @@ const StackSize = 2048
 const GlobalSize = 65536
 const MaxFrames = 1024
 
-var True = &object.Boolean{Value: true}
-var False = &object.Boolean{Value: false}
-var Null = &object.Null{}
+var True = object.True
+var False = object.False
+var Null = object.NullValue
 
 type VM struct {
 	constants   []object.Object
@@ -318,22 +318,6 @@ func (vm *VM) executeComparison(op code.Opcode) error {
 
 }
 
-func (vm *VM) executeIntegerComparison(op code.Opcode, left, right object.Object) error {
-	leftValue := left.(*object.Integer).Value
-	rightValue := right.(*object.Integer).Value
-
-	switch op {
-	case code.OpEqual:
-		return vm.push(object.NativeBoolToBooleanObject(rightValue == leftValue))
-	case code.OpNotEqual:
-		return vm.push(object.NativeBoolToBooleanObject(rightValue != leftValue))
-	case code.OpGreaterThan:
-		return vm.push(object.NativeBoolToBooleanObject(leftValue > rightValue))
-	default:
-		return fmt.Errorf("unknown operator: %d", op)
-	}
-}
-
 func (vm *VM) executeBangOperator() error {
 	operand := vm.pop()
 
@@ -374,13 +358,16 @@ func (vm *VM) executeIndexExpression(left, index object.Object) error {
 func (vm *VM) executeArrayIndex(array, index object.Object) error {
 	arrayObject := array.(*object.Array)
 	i := index.(*object.Integer).Value
-	max := int64(len(arrayObject.Elements) - 1)
+	max := int64(len(arrayObject.Elements))
 
-	if i < 0 || i > max {
+	if i < -max || i >= max {
 		return vm.push(Null)
 	}
 
-	return vm.push(arrayObject.Elements[i])
+	if i >= 0 {
+		return vm.push(arrayObject.Elements[i])
+	}
+	return vm.push(arrayObject.Elements[max+i])
 }
 
 func (vm *VM) executeHashIndex(hash, index object.Object) error {
