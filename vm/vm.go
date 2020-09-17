@@ -92,7 +92,7 @@ func (vm *VM) Run() error {
 			if err != nil {
 				return err
 			}
-		case code.OpEqual, code.OpNotEqual, code.OpGreaterThan:
+		case code.OpEqual, code.OpNotEqual, code.OpGreaterThan, code.OpGreaterOrEqual:
 			err := vm.executeComparison(op)
 			if err != nil {
 				return err
@@ -315,7 +315,6 @@ func (vm *VM) executeComparison(op code.Opcode) error {
 	} else {
 		return fmt.Errorf(result.(*object.Error).Message)
 	}
-
 }
 
 func (vm *VM) executeBangOperator() error {
