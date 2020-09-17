@@ -27,8 +27,10 @@ const (
 	Equal    = "=="
 	NotEqual = "!="
 
-	LessThan    = "<"
-	GreaterThan = ">"
+	LessThan       = "<"
+	LessOrEqual    = "<="
+	GreaterThan    = ">"
+	GreaterOrEqual = ">="
 
 	// Delimiters
 	Comma     = ","

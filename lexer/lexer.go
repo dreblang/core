@@ -50,9 +50,23 @@ func (l *Lexer) NextToken() token.Token {
 	case '/':
 		tok = newToken(token.Slash, l.ch)
 	case '<':
-		tok = newToken(token.LessThan, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{Type: token.LessOrEqual, Literal: literal}
+		} else {
+			tok = newToken(token.LessThan, l.ch)
+		}
 	case '>':
-		tok = newToken(token.GreaterThan, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{Type: token.GreaterOrEqual, Literal: literal}
+		} else {
+			tok = newToken(token.GreaterThan, l.ch)
+		}
 	case ',':
 		tok = newToken(token.Comma, l.ch)
 	case ';':
