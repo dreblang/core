@@ -7,9 +7,13 @@ import (
 )
 
 type IndexExpression struct {
-	Token token.Token // The [ token
-	Left  Expression
-	Index Expression
+	Token      token.Token // The [ token
+	Left       Expression
+	Index      Expression
+	HasUpper   bool
+	IndexUpper Expression
+	HasSkip    bool
+	IndexSkip  Expression
 }
 
 func (ie *IndexExpression) expressionNode()      {}

@@ -399,8 +399,29 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	exp := &ast.IndexExpression{Token: p.currentToken, Left: left}
 
-	p.nextToken()
-	exp.Index = p.parseExpression(Lowest)
+	if !p.peekTokenIs(token.Comma) {
+		p.nextToken()
+		exp.Index = p.parseExpression(Lowest)
+	}
+
+	if p.peekTokenIs(token.Comma) {
+		p.nextToken() // Skip to comma
+
+		exp.HasUpper = true
+		if !(p.peekTokenIs(token.RightBracket) || p.peekTokenIs(token.Comma)) {
+			p.nextToken()
+			exp.IndexUpper = p.parseExpression(Lowest)
+		}
+	}
+
+	if p.peekTokenIs(token.Comma) {
+		p.nextToken() // Skip to comma
+		exp.HasSkip = true
+		if !p.peekTokenIs(token.RightBracket) {
+			p.nextToken()
+			exp.IndexSkip = p.parseExpression(Lowest)
+		}
+	}
 
 	if !p.expectPeek(token.RightBracket) {
 		return nil
