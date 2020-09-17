@@ -127,7 +127,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.String{Value: node.Value}
 
 	case *ast.Boolean:
-		return nativeBoolToBooleanObject(node.Value)
+		return object.NativeBoolToBooleanObject(node.Value)
 
 	case *ast.ArrayLiteral:
 		elements := evalExpressions(node.Elements, env)

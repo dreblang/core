@@ -21,3 +21,7 @@ func (cf *CompiledFunction) String() string { return "cfunc" }
 func (obj *CompiledFunction) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *CompiledFunction) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}

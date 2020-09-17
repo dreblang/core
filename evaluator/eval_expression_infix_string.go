@@ -2,18 +2,7 @@ package evaluator
 
 import (
 	"github.com/dreblang/core/object"
-	"github.com/dreblang/core/token"
 )
-
-func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
-	if operator != token.Plus {
-		return newError("%s: %s %s %s", unknownOperatorError, left.Type(), operator, right.Type())
-	}
-
-	leftVal := left.(*object.String).Value
-	rightVal := right.(*object.String).Value
-	return &object.String{Value: leftVal + rightVal}
-}
 
 func evalIndexExpression(left, index object.Object) object.Object {
 	switch {

@@ -11,3 +11,7 @@ var NullObject = &Null{}
 func (obj *Null) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *Null) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}

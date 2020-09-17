@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/dreblang/core/token"
 )
 
 type Opcode byte
@@ -77,6 +79,16 @@ var definitions = map[Opcode]*Definition{
 	OpClosure:       {"OpClosure", []int{2, 1}},
 	OpGetFree:       {"OpGetFree", []int{1}},
 	OpMember:        {"OpMember", []int{}},
+}
+
+var OpCodeToOperatorMap = map[Opcode]string{
+	OpAdd:         token.Plus,
+	OpSub:         token.Minus,
+	OpMul:         token.Asterisk,
+	OpDiv:         token.Slash,
+	OpGreaterThan: token.GreaterThan,
+	OpEqual:       token.Equal,
+	OpNotEqual:    token.NotEqual,
 }
 
 type Instructions []byte

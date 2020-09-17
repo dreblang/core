@@ -286,107 +286,13 @@ func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
 
-	leftType := left.Type()
-	rightType := right.Type()
-
-	switch {
-	case (leftType == object.IntegerObj || leftType == object.FloatObj) && (rightType == object.IntegerObj || rightType == object.FloatObj):
-		return vm.executeBinaryNumericOperation(op, left, right)
-
-	case leftType == object.StringObj && rightType == object.StringObj:
-		return vm.executeBinaryStringOperation(op, left, right)
-
-	default:
-		return fmt.Errorf("unsupported types for binary operation: %s %s", leftType, rightType)
+	result := left.InfixOperation(code.OpCodeToOperatorMap[op], right)
+	if result.Type() != object.ErrorObj {
+		vm.push(result)
+		return nil
+	} else {
+		return fmt.Errorf(result.(*object.Error).Message)
 	}
-}
-
-func (vm *VM) execIntIntOperation(op code.Opcode, left, right *object.Integer) error {
-	leftValue := left.Value
-	rightValue := right.Value
-
-	var result int64
-
-	switch op {
-	case code.OpAdd:
-		result = leftValue + rightValue
-	case code.OpSub:
-		result = leftValue - rightValue
-	case code.OpMul:
-		result = leftValue * rightValue
-	case code.OpDiv:
-		result = leftValue / rightValue
-	default:
-		return fmt.Errorf("unknown numeric operator: %d", op)
-	}
-
-	return vm.push(&object.Integer{Value: result})
-}
-
-func (vm *VM) execIntFloatOperation(op code.Opcode, left *object.Integer, right *object.Float) error {
-	leftValue := float64(left.Value)
-	rightValue := right.Value
-
-	var result float64
-
-	switch op {
-	case code.OpAdd:
-		result = leftValue + rightValue
-	case code.OpSub:
-		result = leftValue - rightValue
-	case code.OpMul:
-		result = leftValue * rightValue
-	case code.OpDiv:
-		result = leftValue / rightValue
-	default:
-		return fmt.Errorf("unknown numeric operator: %d", op)
-	}
-
-	return vm.push(&object.Float{Value: result})
-}
-
-func (vm *VM) execFloatIntOperation(op code.Opcode, left *object.Float, right *object.Integer) error {
-	leftValue := left.Value
-	rightValue := float64(right.Value)
-
-	var result float64
-
-	switch op {
-	case code.OpAdd:
-		result = leftValue + rightValue
-	case code.OpSub:
-		result = leftValue - rightValue
-	case code.OpMul:
-		result = leftValue * rightValue
-	case code.OpDiv:
-		result = leftValue / rightValue
-	default:
-		return fmt.Errorf("unknown numeric operator: %d", op)
-	}
-
-	return vm.push(&object.Float{Value: result})
-}
-
-func (vm *VM) execFloatFloatOperation(op code.Opcode, left, right *object.Float) error {
-	leftValue := left.Value
-	rightValue := right.Value
-
-	var result float64
-
-	switch op {
-	case code.OpAdd:
-		result = leftValue + rightValue
-	case code.OpSub:
-		result = leftValue - rightValue
-	case code.OpMul:
-		result = leftValue * rightValue
-	case code.OpDiv:
-		result = leftValue / rightValue
-	default:
-		return fmt.Errorf("unknown numeric operator: %d", op)
-	}
-
-	return vm.push(&object.Float{Value: result})
 }
 
 func (vm *VM) executeMemberOperation(op code.Opcode) error {
@@ -398,55 +304,33 @@ func (vm *VM) executeMemberOperation(op code.Opcode) error {
 	return nil
 }
 
-func (vm *VM) executeBinaryNumericOperation(op code.Opcode, left, right object.Object) error {
-	switch left.(type) {
-	case *object.Integer:
-		switch right.(type) {
-		case *object.Integer:
-			return vm.execIntIntOperation(op, left.(*object.Integer), right.(*object.Integer))
-		case *object.Float:
-			return vm.execIntFloatOperation(op, left.(*object.Integer), right.(*object.Float))
-		}
-
-	case *object.Float:
-		switch right.(type) {
-		case *object.Integer:
-			return vm.execFloatIntOperation(op, left.(*object.Float), right.(*object.Integer))
-		case *object.Float:
-			return vm.execFloatFloatOperation(op, left.(*object.Float), right.(*object.Float))
-		}
-	}
-
-	return fmt.Errorf("unknown numeric operation")
-}
-
-func (vm *VM) executeBinaryStringOperation(op code.Opcode, left, right object.Object) error {
-	if op != code.OpAdd {
-		return fmt.Errorf("unknown string operator: %d", op)
-	}
-
-	leftValue := left.(*object.String).Value
-	rightValue := right.(*object.String).Value
-
-	return vm.push(&object.String{Value: leftValue + rightValue})
-}
-
 func (vm *VM) executeComparison(op code.Opcode) error {
+	// right := vm.pop()
+	// left := vm.pop()
+
+	// if left.Type() == object.IntegerObj || right.Type() == object.IntegerObj {
+	// 	return vm.executeIntegerComparison(op, left, right)
+	// }
+
+	// switch op {
+	// case code.OpEqual:
+	// 	return vm.push(object.NativeBoolToBooleanObject(right == left))
+	// case code.OpNotEqual:
+	// 	return vm.push(object.NativeBoolToBooleanObject(right != left))
+	// default:
+	// 	return fmt.Errorf("unknown operator: %d %s %s", op, left.Type(), right.Type())
+	// }
 	right := vm.pop()
 	left := vm.pop()
 
-	if left.Type() == object.IntegerObj || right.Type() == object.IntegerObj {
-		return vm.executeIntegerComparison(op, left, right)
+	result := left.InfixOperation(code.OpCodeToOperatorMap[op], right)
+	if result.Type() != object.ErrorObj {
+		vm.push(result)
+		return nil
+	} else {
+		return fmt.Errorf(result.(*object.Error).Message)
 	}
 
-	switch op {
-	case code.OpEqual:
-		return vm.push(nativeBoolToBooleanObject(right == left))
-	case code.OpNotEqual:
-		return vm.push(nativeBoolToBooleanObject(right != left))
-	default:
-		return fmt.Errorf("unknown operator: %d %s %s", op, left.Type(), right.Type())
-	}
 }
 
 func (vm *VM) executeIntegerComparison(op code.Opcode, left, right object.Object) error {
@@ -455,11 +339,11 @@ func (vm *VM) executeIntegerComparison(op code.Opcode, left, right object.Object
 
 	switch op {
 	case code.OpEqual:
-		return vm.push(nativeBoolToBooleanObject(rightValue == leftValue))
+		return vm.push(object.NativeBoolToBooleanObject(rightValue == leftValue))
 	case code.OpNotEqual:
-		return vm.push(nativeBoolToBooleanObject(rightValue != leftValue))
+		return vm.push(object.NativeBoolToBooleanObject(rightValue != leftValue))
 	case code.OpGreaterThan:
-		return vm.push(nativeBoolToBooleanObject(leftValue > rightValue))
+		return vm.push(object.NativeBoolToBooleanObject(leftValue > rightValue))
 	default:
 		return fmt.Errorf("unknown operator: %d", op)
 	}
@@ -630,14 +514,6 @@ func (vm *VM) pushClosure(constIndex, numFree int) error {
 
 	closure := &object.Closure{Fn: function, Free: free}
 	return vm.push(closure)
-}
-
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return True
-	} else {
-		return False
-	}
 }
 
 func isTruthy(obj object.Object) bool {

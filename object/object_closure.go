@@ -22,3 +22,7 @@ func (c *Closure) String() string {
 func (obj *Closure) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *Closure) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}

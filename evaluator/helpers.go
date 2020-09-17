@@ -16,11 +16,3 @@ func isTruthy(obj object.Object) bool {
 		return true
 	}
 }
-
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return True
-	} else {
-		return False
-	}
-}

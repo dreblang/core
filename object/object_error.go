@@ -11,3 +11,7 @@ func (e *Error) String() string   { return e.Message }
 func (obj *Error) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *Error) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}

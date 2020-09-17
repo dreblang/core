@@ -11,3 +11,7 @@ func (rv *ReturnValue) String() string   { return rv.Value.String() }
 func (obj *ReturnValue) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *ReturnValue) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}

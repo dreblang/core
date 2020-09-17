@@ -31,3 +31,7 @@ func (b *Boolean) String() string {
 func (obj *Boolean) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
+func (obj *Boolean) InfixOperation(operator string, other Object) Object {
+	return newError("Unsupported operation [%s]", operator)
+}
