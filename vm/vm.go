@@ -164,10 +164,13 @@ func (vm *VM) Run() error {
 				return err
 			}
 		case code.OpIndex:
+			hasSkip := vm.pop()
+			indexSkip := vm.pop()
+			hasUpper := vm.pop()
+			indexUpper := vm.pop()
 			index := vm.pop()
 			left := vm.pop()
-
-			err := vm.executeIndexExpression(left, index)
+			err := vm.executeIndexExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip)
 			if err != nil {
 				return err
 			}
@@ -343,10 +346,11 @@ func (vm *VM) executeMinusOperator() error {
 	return vm.push(&object.Integer{Value: -value})
 }
 
-func (vm *VM) executeIndexExpression(left, index object.Object) error {
+func (vm *VM) executeIndexExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip object.Object) error {
 	switch {
-	case left.Type() == object.ArrayObj && index.Type() == object.IntegerObj:
-		return vm.executeArrayIndex(left, index)
+	case left.Type() == object.ArrayObj:
+		return vm.executeArrayIndex(left, index, indexUpper, indexSkip, hasUpper, hasSkip)
+
 	case left.Type() == object.HashObj:
 		return vm.executeHashIndex(left, index)
 	default:
@@ -354,19 +358,45 @@ func (vm *VM) executeIndexExpression(left, index object.Object) error {
 	}
 }
 
-func (vm *VM) executeArrayIndex(array, index object.Object) error {
+func (vm *VM) executeArrayIndex(array, index, indexUpper, indexSkip, hasUpper, hasSkip object.Object) error {
 	arrayObject := array.(*object.Array)
-	i := index.(*object.Integer).Value
+	idx := index.(*object.Integer).Value
 	max := int64(len(arrayObject.Elements))
 
-	if i < -max || i >= max {
-		return vm.push(Null)
+	var idxUpper int64 = max
+
+	if idx < 0 {
+		idx = max + idx
 	}
 
-	if i >= 0 {
-		return vm.push(arrayObject.Elements[i])
+	if !isTruthy(hasUpper) {
+		if idx < 0 || idx >= max {
+			return vm.push(Null)
+		}
+
+		return vm.push(arrayObject.Elements[idx])
 	}
-	return vm.push(arrayObject.Elements[max+i])
+
+	if indexUpper != object.NullObject {
+		idxUpper = indexUpper.(*object.Integer).Value
+	}
+	if idxUpper < 0 {
+		idxUpper += max
+	}
+
+	var inc int64 = 1
+	if isTruthy(hasSkip) {
+		inc = indexSkip.(*object.Integer).Value
+	}
+
+	elements := make([]object.Object, 0)
+
+	for i := idx; i < idxUpper; i += inc {
+		elements = append(elements, arrayObject.Elements[i])
+	}
+	return vm.push(&object.Array{
+		Elements: elements,
+	})
 }
 
 func (vm *VM) executeHashIndex(hash, index object.Object) error {

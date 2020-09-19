@@ -21,6 +21,10 @@ var (
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
+	if node == nil {
+		return nil
+	}
+
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
@@ -65,13 +69,32 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 				return left
 			}
 			return evalMemberOperation(left, node.Right)
+
 		} else if node.Operator == "=" {
 			val := Eval(node.Right, env)
 			if isError(val) {
 				return val
 			}
-			env.Set(node.Left.String(), val)
-			return val
+			switch leftNode := node.Left.(type) {
+			case *ast.Identifier:
+				env.Set(leftNode.String(), val)
+				return val
+
+			case *ast.IndexExpression:
+				return evalIndexSetExpression(
+					Eval(leftNode.Left, env),
+					Eval(leftNode.Index, env),
+					Eval(leftNode.IndexUpper, env),
+					Eval(leftNode.IndexSkip, env),
+					leftNode.HasUpper,
+					leftNode.HasSkip,
+					val,
+				)
+
+			default:
+				return newError("Error executing assignment.")
+			}
+
 		} else {
 			left := Eval(node.Left, env)
 			if isError(left) {
@@ -103,11 +126,20 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return left
 		}
 
-		index := Eval(node.Index, env)
+		var index, indexUpper, indexSkip object.Object
+		if node.Index != nil {
+			index = Eval(node.Index, env)
+		}
+		if node.IndexUpper != nil {
+			indexUpper = Eval(node.IndexUpper, env)
+		}
+		if node.IndexSkip != nil {
+			indexSkip = Eval(node.IndexSkip, env)
+		}
 		if isError(index) {
 			return index
 		}
-		return evalIndexExpression(left, index)
+		return evalIndexExpression(left, index, indexUpper, indexSkip, node.HasUpper, node.HasSkip)
 
 	case *ast.Identifier:
 		return evalIdentifier(node, env)

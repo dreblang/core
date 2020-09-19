@@ -228,10 +228,34 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		err = c.Compile(node.Index)
-		if err != nil {
-			return err
+		if node.Index != nil {
+			err = c.Compile(node.Index)
+			if err != nil {
+				return err
+			}
+		} else {
+			c.emit(code.OpConstant, c.addConstant(&object.Integer{}))
 		}
+
+		if node.IndexUpper != nil {
+			err = c.Compile(node.IndexUpper)
+			if err != nil {
+				return err
+			}
+		} else {
+			c.emit(code.OpConstant, c.addConstant(object.NullObject))
+		}
+		c.emit(code.OpConstant, c.addConstant(object.NativeBoolToBooleanObject(node.HasUpper)))
+
+		if node.IndexSkip != nil {
+			err = c.Compile(node.IndexSkip)
+			if err != nil {
+				return err
+			}
+		} else {
+			c.emit(code.OpConstant, c.addConstant(&object.Integer{Value: 1}))
+		}
+		c.emit(code.OpConstant, c.addConstant(object.NativeBoolToBooleanObject(node.HasSkip)))
 
 		c.emit(code.OpIndex)
 	case *ast.CallExpression:
