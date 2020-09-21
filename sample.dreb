@@ -7,4 +7,4 @@ loopfunc = fn(n) {
 	}
 	return sum
 }
-loopfunc(10000000)
+puts(loopfunc(10000000))
