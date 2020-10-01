@@ -104,17 +104,24 @@ func (c *Compiler) Compile(node ast.Node) error {
 			c.emit(code.OpGreaterOrEqual)
 			return nil
 		} else if node.Operator == "=" {
-			symbol := c.symbolTable.Define(node.Left.String())
 			err := c.Compile(node.Right)
 			if err != nil {
 				return err
 			}
 
-			if symbol.Scope == GlobalScope {
-				c.emit(code.OpSetGlobal, symbol.Index)
-			} else {
-				c.emit(code.OpSetLocal, symbol.Index)
+			switch leftNode := node.Left.(type) {
+			case *ast.Identifier:
+				symbol := c.symbolTable.Define(leftNode.String())
+				if symbol.Scope == GlobalScope {
+					c.emit(code.OpSetGlobal, symbol.Index)
+				} else {
+					c.emit(code.OpSetLocal, symbol.Index)
+				}
+
+			case *ast.IndexExpression:
+				return fmt.Errorf("Cannot assign to array element")
 			}
+
 			return nil
 		}
 
