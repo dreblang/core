@@ -31,6 +31,8 @@ func (obj *Integer) InfixOperation(operator string, other Object) Object {
 		return obj.Multiply(other)
 	case token.Slash:
 		return obj.Divide(other)
+	case token.Percent:
+		return obj.Modulo(other)
 	case token.LessThan:
 		return obj.LessThan(other)
 	case token.LessOrEqual:
@@ -100,6 +102,16 @@ func (obj *Integer) Divide(other Object) Object {
 	case FloatObj:
 		return &Float{
 			Value: float64(obj.Value) / other.(*Float).Value,
+		}
+	}
+	return newError("Could not perform arithmetic operation")
+}
+
+func (obj *Integer) Modulo(other Object) Object {
+	switch other.Type() {
+	case IntegerObj:
+		return &Integer{
+			Value: obj.Value % other.(*Integer).Value,
 		}
 	}
 	return newError("Could not perform arithmetic operation")

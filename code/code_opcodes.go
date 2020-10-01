@@ -9,6 +9,7 @@ const (
 	OpSub
 	OpMul
 	OpDiv
+	OpMod
 	OpTrue
 	OpFalse
 	OpEqual
