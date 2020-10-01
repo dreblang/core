@@ -3,7 +3,8 @@ package object
 type MemberFunction func(this Object, args ...Object) Object
 
 type MemberFn struct {
-	Fn MemberFunction
+	Obj Object
+	Fn  MemberFunction
 }
 
 func (b *MemberFn) Type() ObjectType { return BuiltinObj }

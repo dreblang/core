@@ -466,6 +466,8 @@ func (vm *VM) executeCall(numArgs int) error {
 		return vm.callClosure(callee, numArgs)
 	case *object.Builtin:
 		return vm.callBuiltin(callee, numArgs)
+	case *object.MemberFn:
+		return vm.callMember(callee, numArgs)
 	default:
 		return fmt.Errorf("calling non-function and non-built-in")
 	}
@@ -489,6 +491,21 @@ func (vm *VM) callBuiltin(builtin *object.Builtin, numArgs int) error {
 	args := vm.stack[vm.sp-numArgs : vm.sp]
 
 	result := builtin.Fn(args...)
+	vm.sp = vm.sp - numArgs - 1
+
+	if result != nil {
+		vm.push(result)
+	} else {
+		vm.push(Null)
+	}
+
+	return nil
+}
+
+func (vm *VM) callMember(memberfn *object.MemberFn, numArgs int) error {
+	args := vm.stack[vm.sp-numArgs : vm.sp]
+
+	result := memberfn.Fn(memberfn.Obj, args...)
 	vm.sp = vm.sp - numArgs - 1
 
 	if result != nil {

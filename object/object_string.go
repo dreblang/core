@@ -24,6 +24,11 @@ func (obj *String) GetMember(name string) Object {
 	switch name {
 	case "length":
 		return &Integer{Value: int64(len(obj.Value))}
+	case "sub":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  StringSub,
+		}
 	}
 
 	return newError("No member named [%s]", name)
@@ -45,4 +50,27 @@ func (obj *String) Add(other Object) Object {
 		}
 	}
 	return newError("Could not concat string with type [%s]", other.Type())
+}
+
+func StringSub(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 0:
+		return this
+	case 1:
+		if startIdx, ok := args[0].(*Integer); ok {
+			return &String{
+				Value: str.Value[startIdx.Value:],
+			}
+		}
+	case 2:
+		if startIdx, ok := args[0].(*Integer); ok {
+			if endIdx, ok := args[1].(*Integer); ok {
+				return &String{
+					Value: str.Value[startIdx.Value:endIdx.Value],
+				}
+			}
+		}
+	}
+	return newError("Could not execute sub string operation. Invalid arguments!")
 }

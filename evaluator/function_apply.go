@@ -36,6 +36,13 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 			return Null
 		}
 
+	case *object.MemberFn:
+		if result := fn.Fn(fn.Obj, args...); result != nil {
+			return result
+		} else {
+			return Null
+		}
+
 	default:
 		return newError("%s: %s", notFunctionError, fn.Type())
 	}
