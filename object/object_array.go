@@ -3,6 +3,8 @@ package object
 import (
 	"bytes"
 	"strings"
+
+	"github.com/dreblang/core/token"
 )
 
 type Array struct {
@@ -38,5 +40,19 @@ func (obj *Array) GetMember(name string) Object {
 }
 
 func (obj *Array) InfixOperation(operator string, other Object) Object {
+	switch operator {
+	case token.Plus:
+		return obj.Add(other)
+	}
 	return newError("Unsupported operation [%s]", operator)
+}
+
+func (obj *Array) Add(other Object) Object {
+	switch other.Type() {
+	case ArrayObj:
+		return &Array{
+			Elements: append(obj.Elements, other.(*Array).Elements...),
+		}
+	}
+	return newError("Could not concat array with type [%s]", other.Type())
 }
