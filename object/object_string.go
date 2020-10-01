@@ -2,6 +2,7 @@ package object
 
 import (
 	"hash/fnv"
+	"strings"
 
 	"github.com/dreblang/core/token"
 )
@@ -28,6 +29,21 @@ func (obj *String) GetMember(name string) Object {
 		return &MemberFn{
 			Obj: obj,
 			Fn:  StringSub,
+		}
+	case "upper":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  StringUpper,
+		}
+	case "lower":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  StringLower,
+		}
+	case "replace":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  StringReplace,
 		}
 	}
 
@@ -72,5 +88,42 @@ func StringSub(this Object, args ...Object) Object {
 			}
 		}
 	}
-	return newError("Could not execute sub string operation. Invalid arguments!")
+	return newError("Could not execute sub-string operation. Invalid arguments!")
+}
+
+func StringUpper(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 0:
+		return &String{
+			Value: strings.ToUpper(str.Value),
+		}
+	}
+	return newError("Could not execute string upper operation. Invalid arguments!")
+}
+
+func StringLower(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 0:
+		return &String{
+			Value: strings.ToLower(str.Value),
+		}
+	}
+	return newError("Could not execute string lower operation. Invalid arguments!")
+}
+
+func StringReplace(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 2:
+		if search, ok := args[0].(*String); ok {
+			if replace, ok := args[1].(*String); ok {
+				return &String{
+					Value: strings.ReplaceAll(str.Value, search.Value, replace.Value),
+				}
+			}
+		}
+	}
+	return newError("Could not execute string replace operation. Invalid arguments!")
 }
