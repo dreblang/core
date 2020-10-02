@@ -707,6 +707,34 @@ func TestParsingIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestParsingComplexIndex1(t *testing.T) {
+	input := "myArray[0,]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not %T. got=%T", &ast.IndexExpression{}, stmt.Expression)
+	}
+
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.Index, 0) {
+		return
+	}
+
+	if !indexExp.HasUpper {
+		t.Error("Expected true for has upper")
+		return
+	}
+}
+
 func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	int, ok := il.(*ast.IntegerLiteral)
 	if !ok {

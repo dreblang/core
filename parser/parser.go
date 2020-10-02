@@ -214,12 +214,7 @@ func (p *Parser) parseIdentifier() ast.Expression {
 func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit := &ast.IntegerLiteral{Token: p.currentToken}
 
-	value, err := strconv.ParseInt(p.currentToken.Literal, 0, 64)
-	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer", p.currentToken.Literal)
-		p.errors = append(p.errors, msg)
-		return nil
-	}
+	value, _ := strconv.ParseInt(p.currentToken.Literal, 0, 64)
 
 	lit.Value = value
 	return lit
@@ -228,12 +223,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 func (p *Parser) parseFloatLiteral() ast.Expression {
 	lit := &ast.FloatLiteral{Token: p.currentToken}
 
-	value, err := strconv.ParseFloat(p.currentToken.Literal, 64)
-	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float", p.currentToken.Literal)
-		p.errors = append(p.errors, msg)
-		return nil
-	}
+	value, _ := strconv.ParseFloat(p.currentToken.Literal, 64)
 
 	lit.Value = value
 	return lit
@@ -341,7 +331,6 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	var identifiers []*ast.Identifier
 
-	// TODO Support identifier
 	if p.peekTokenIs(token.RightParen) {
 		p.nextToken()
 		return identifiers
@@ -479,18 +468,6 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 	return expression
 }
-
-// func (p *Parser) parseAssignExpression(left ast.Expression) ast.Expression {
-// 	expression := &ast.InfixExpression{
-// 		Token:    p.currentToken,
-// 		Operator: p.currentToken.Literal,
-// 		Left:     left,
-// 	}
-// 	p.nextToken()
-// 	right := p.parseStringLiteral()
-// 	expression.Right = right
-// 	return expression
-// }
 
 func (p *Parser) parseMemberExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{
