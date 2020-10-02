@@ -1,6 +1,9 @@
 package lexer
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/dreblang/core/token"
 )
 
@@ -145,7 +148,8 @@ func (l *Lexer) readString() string {
 			break
 		}
 	}
-	return l.input[pos:l.position]
+	result, _ := strconv.Unquote("\"" + l.input[pos:l.position] + "\"")
+	return result
 }
 
 func (l *Lexer) readString2() string {
@@ -159,7 +163,11 @@ func (l *Lexer) readString2() string {
 			break
 		}
 	}
-	return l.input[pos:l.position]
+	instr := l.input[pos:l.position]
+	instr = strings.ReplaceAll(instr, "\"", "\\\"")
+	instr = strings.ReplaceAll(instr, "\\'", "'")
+	result, _ := strconv.Unquote("\"" + instr + "\"")
+	return result
 }
 
 func (l *Lexer) readString3() string {
@@ -173,7 +181,8 @@ func (l *Lexer) readString3() string {
 			break
 		}
 	}
-	return l.input[pos:l.position]
+	result, _ := strconv.Unquote("`" + l.input[pos:l.position] + "`")
+	return result
 }
 
 func (l *Lexer) readNumber() (string, bool) {
