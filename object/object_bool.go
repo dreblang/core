@@ -2,6 +2,8 @@ package object
 
 import (
 	"fmt"
+
+	"github.com/dreblang/core/token"
 )
 
 type Boolean struct {
@@ -33,5 +35,27 @@ func (obj *Boolean) GetMember(name string) Object {
 }
 
 func (obj *Boolean) InfixOperation(operator string, other Object) Object {
+	switch operator {
+	case token.Equal:
+		return obj.Equals(other)
+	case token.NotEqual:
+		return obj.NotEquals(other)
+	}
 	return newError("Unsupported operation [%s]", operator)
+}
+
+func (obj *Boolean) Equals(other Object) Object {
+	switch other.Type() {
+	case BooleanObj:
+		return NativeBoolToBooleanObject(obj.Value == other.(*Boolean).Value)
+	}
+	return newError("Could not perform arithmetic operation")
+}
+
+func (obj *Boolean) NotEquals(other Object) Object {
+	switch other.Type() {
+	case BooleanObj:
+		return NativeBoolToBooleanObject(obj.Value != other.(*Boolean).Value)
+	}
+	return newError("Could not perform arithmetic operation")
 }
