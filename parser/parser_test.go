@@ -409,6 +409,43 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestLoopExpression(t *testing.T) {
+	input := `loop (x < 10) { x }`
+
+	program := createParseProgram(input, t)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.body does not contain %d statements. got=%d\n", 1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not %T. got=%T", &ast.ExpressionStatement{}, program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.LoopExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not %T. got=%T", &ast.IfExpression{}, stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", "<", 10) {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Errorf("consequence is not 1 statements. got=%d\n", len(exp.Consequence.Statements))
+	}
+
+	consequence, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Statements[0] is not %T. got=%T", &ast.ExpressionStatement{}, exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, consequence.Expression, "x") {
+		return
+	}
+}
+
 func TestFunctionLiteralParsing(t *testing.T) {
 	input := `fn(x, y) { x + y; }`
 
@@ -626,6 +663,189 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+func TestErrorCases(t *testing.T) {
+	input := "loop { x }"
+	l := lexer.New(input)
+	p := New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "loop (x < y { x }"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "loop (x<y) 5"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let 5 = 10"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let a * 10"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "(a+3"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "if { x }"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "if (x < y { x }"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "if (x<y) 5"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "if (x<y) { x } else 5"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "fn { x }"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "fn (a,b) 5"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "fn (a,b { x }"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "myArray[0"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let a = {"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let a = {0:1 2"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let a = {0:1, 1:2"
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+	input = "let a = ["
+	l = lexer.New(input)
+	p = New(l)
+	p.ParseProgram()
+
+	if len(p.errors) == 0 {
+		t.Error("Expected error in program")
+		return
+	}
+
+}
+
 func createParseProgram(input string, t *testing.T) *ast.Program {
 	l := lexer.New(input)
 	p := New(l)
@@ -731,6 +951,133 @@ func TestParsingComplexIndex1(t *testing.T) {
 
 	if !indexExp.HasUpper {
 		t.Error("Expected true for has upper")
+		return
+	}
+}
+
+func TestParsingComplexIndex2(t *testing.T) {
+	input := "myArray[0,1]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not %T. got=%T", &ast.IndexExpression{}, stmt.Expression)
+	}
+
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.Index, 0) {
+		return
+	}
+
+	if !indexExp.HasUpper {
+		t.Error("Expected true for has upper")
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.IndexUpper, 1) {
+		return
+	}
+}
+
+func TestParsingComplexIndex3(t *testing.T) {
+	input := "myArray[0,1,]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not %T. got=%T", &ast.IndexExpression{}, stmt.Expression)
+	}
+
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.Index, 0) {
+		return
+	}
+
+	if !indexExp.HasUpper {
+		t.Error("Expected true for has upper")
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.IndexUpper, 1) {
+		return
+	}
+
+	if !indexExp.HasSkip {
+		t.Error("Expected true for has skip")
+		return
+	}
+}
+
+func TestParsingComplexIndex4(t *testing.T) {
+	input := "myArray[0,1,2]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not %T. got=%T", &ast.IndexExpression{}, stmt.Expression)
+	}
+
+	if !testIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.Index, 0) {
+		return
+	}
+
+	if !indexExp.HasUpper {
+		t.Error("Expected true for has upper")
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.IndexUpper, 1) {
+		return
+	}
+
+	if !indexExp.HasSkip {
+		t.Error("Expected true for has skip")
+		return
+	}
+
+	if !testIntegerLiteral(t, indexExp.IndexSkip, 2) {
+		return
+	}
+}
+
+func TestMemberExpression(t *testing.T) {
+	input := "hello.world"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
+	opExp, _ := stmt.Expression.(*ast.InfixExpression)
+
+	if opExp.Operator != "." {
+		t.Error("Expected dot operator.")
 		return
 	}
 }

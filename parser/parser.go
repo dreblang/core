@@ -447,10 +447,7 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 		}
 	}
 
-	if !p.expectPeek(token.RightBrace) {
-		return nil
-	}
-
+	p.expectPeek(token.RightBrace)
 	return hash
 }
 
