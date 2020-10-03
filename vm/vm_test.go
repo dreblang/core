@@ -24,6 +24,7 @@ func TestIntegerArithmetic(t *testing.T) {
 		{"1 - 2", -1},
 		{"1 * 2", 2},
 		{"4 / 2", 2},
+		{"3 % 2", 1},
 		{"50 / 2 * 2 + 10 - 5", 55},
 		{"5 * (2 + 10)", 60},
 		{"5 + 5 + 5 + 5 - 10", 10},
@@ -52,6 +53,8 @@ func TestBooleanExpressions(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
+		{"1 <= 1", true},
+		{"1 >= 2", false},
 		{"true == true", true},
 		{"false == false", true},
 		{"true == false", false},
@@ -216,6 +219,13 @@ func TestCallingFunctionsWithoutArguments(t *testing.T) {
 			noReturnTwo();
 			`,
 			expected: Null,
+		},
+		{
+			input: `
+			let a = [1, 2, 3]
+			a.length
+			`,
+			expected: 3,
 		},
 	}
 

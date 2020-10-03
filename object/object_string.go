@@ -54,6 +54,18 @@ func (obj *String) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:
 		return obj.Add(other)
+	case token.LessThan:
+		return obj.LessThan(other)
+	case token.LessOrEqual:
+		return obj.LessOrEqual(other)
+	case token.GreaterThan:
+		return obj.GreaterThan(other)
+	case token.GreaterOrEqual:
+		return obj.GreaterOrEqual(other)
+	case token.Equal:
+		return obj.Equals(other)
+	case token.NotEqual:
+		return obj.NotEquals(other)
 	}
 	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
@@ -66,6 +78,54 @@ func (obj *String) Add(other Object) Object {
 		}
 	}
 	return newError("Could not concat string with type [%s]", other.Type())
+}
+
+func (obj *String) LessThan(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value < other.(*String).Value)
+	}
+	return newError("%s: %s < %s", typeMissMatchError, obj.Type(), other.Type())
+}
+
+func (obj *String) LessOrEqual(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value <= other.(*String).Value)
+	}
+	return newError("%s: %s <= %s", typeMissMatchError, obj.Type(), other.Type())
+}
+
+func (obj *String) GreaterThan(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value > other.(*String).Value)
+	}
+	return newError("%s: %s > %s", typeMissMatchError, obj.Type(), other.Type())
+}
+
+func (obj *String) GreaterOrEqual(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value >= other.(*String).Value)
+	}
+	return newError("%s: %s >= %s", typeMissMatchError, obj.Type(), other.Type())
+}
+
+func (obj *String) Equals(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value == other.(*String).Value)
+	}
+	return False
+}
+
+func (obj *String) NotEquals(other Object) Object {
+	switch other.Type() {
+	case StringObj:
+		return NativeBoolToBooleanObject(obj.Value != other.(*String).Value)
+	}
+	return True
 }
 
 func StringSub(this Object, args ...Object) Object {
