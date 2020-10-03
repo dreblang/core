@@ -13,5 +13,5 @@ func (obj *Null) GetMember(name string) Object {
 }
 
 func (obj *Null) InfixOperation(operator string, other Object) Object {
-	return newError("Unsupported operation [%s]", operator)
+	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }

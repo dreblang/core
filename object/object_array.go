@@ -44,7 +44,7 @@ func (obj *Array) InfixOperation(operator string, other Object) Object {
 	case token.Plus:
 		return obj.Add(other)
 	}
-	return newError("Unsupported operation [%s]", operator)
+	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
 
 func (obj *Array) Add(other Object) Object {
