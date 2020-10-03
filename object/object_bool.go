@@ -41,7 +41,7 @@ func (obj *Boolean) InfixOperation(operator string, other Object) Object {
 	case token.NotEqual:
 		return obj.NotEquals(other)
 	}
-	return newError("Unsupported operation [%s]", operator)
+	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
 
 func (obj *Boolean) Equals(other Object) Object {

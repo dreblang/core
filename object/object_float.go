@@ -57,7 +57,7 @@ func (obj *Float) Add(other Object) Object {
 			Value: float64(obj.Value) + other.(*Float).Value,
 		}
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s + %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) Subtract(other Object) Object {
@@ -71,7 +71,7 @@ func (obj *Float) Subtract(other Object) Object {
 			Value: float64(obj.Value) - other.(*Float).Value,
 		}
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s - %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) Multiply(other Object) Object {
@@ -85,7 +85,7 @@ func (obj *Float) Multiply(other Object) Object {
 			Value: float64(obj.Value) * other.(*Float).Value,
 		}
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s * %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) Divide(other Object) Object {
@@ -99,7 +99,7 @@ func (obj *Float) Divide(other Object) Object {
 			Value: float64(obj.Value) / other.(*Float).Value,
 		}
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s / %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) LessThan(other Object) Object {
@@ -109,7 +109,7 @@ func (obj *Float) LessThan(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value < other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s < %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) LessOrEqual(other Object) Object {
@@ -119,7 +119,7 @@ func (obj *Float) LessOrEqual(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value <= other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s <= %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) GreaterThan(other Object) Object {
@@ -129,7 +129,7 @@ func (obj *Float) GreaterThan(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value > other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s > %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) GreaterOrEqual(other Object) Object {
@@ -139,7 +139,7 @@ func (obj *Float) GreaterOrEqual(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value >= other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return newError("%s: %s >= %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
 func (obj *Float) Equals(other Object) Object {
@@ -149,7 +149,7 @@ func (obj *Float) Equals(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value == other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return False
 }
 
 func (obj *Float) NotEquals(other Object) Object {
@@ -159,5 +159,5 @@ func (obj *Float) NotEquals(other Object) Object {
 	case FloatObj:
 		return NativeBoolToBooleanObject(obj.Value != other.(*Float).Value)
 	}
-	return newError("Could not perform arithmetic operation")
+	return True
 }

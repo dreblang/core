@@ -15,9 +15,9 @@ const (
 )
 
 var (
-	Null  = &object.Null{}
-	True  = &object.Boolean{Value: true}
-	False = &object.Boolean{Value: false}
+	Null  = object.NullObject
+	True  = object.True
+	False = object.False
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
