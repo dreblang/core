@@ -52,16 +52,17 @@ func (obj *Integer) InfixOperation(operator string, other Object) Object {
 
 // Arithmetic operations
 func (obj *Integer) Add(other Object) Object {
-	switch other.Type() {
-	case IntegerObj:
+	switch val := other.(type) {
+	case *Integer:
 		return &Integer{
-			Value: obj.Value + other.(*Integer).Value,
+			Value: obj.Value + val.Value,
 		}
-	case FloatObj:
+	case *Float:
 		return &Float{
-			Value: float64(obj.Value) + other.(*Float).Value,
+			Value: float64(obj.Value) + val.Value,
 		}
 	}
+
 	return newError("%s: %s + %s", typeMissMatchError, obj.Type(), other.Type())
 }
 
@@ -118,11 +119,11 @@ func (obj *Integer) Modulo(other Object) Object {
 }
 
 func (obj *Integer) LessThan(other Object) Object {
-	switch other.Type() {
-	case IntegerObj:
-		return NativeBoolToBooleanObject(obj.Value < other.(*Integer).Value)
-	case FloatObj:
-		return NativeBoolToBooleanObject(float64(obj.Value) < other.(*Float).Value)
+	switch val := other.(type) {
+	case *Integer:
+		return NativeBoolToBooleanObject(obj.Value < val.Value)
+	case *Float:
+		return NativeBoolToBooleanObject(float64(obj.Value) < val.Value)
 	}
 	return newError("%s: %s < %s", typeMissMatchError, obj.Type(), other.Type())
 }
