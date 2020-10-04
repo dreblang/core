@@ -13,12 +13,12 @@ type Boolean struct {
 func (b *Boolean) Type() ObjectType { return BooleanObj }
 func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
 func (b *Boolean) HashKey() HashKey {
-	var value uint64
+	var value string
 
 	if b.Value {
-		value = 1
+		value = "t"
 	} else {
-		value = 0
+		value = "f"
 	}
 
 	return HashKey{Type: b.Type(), Value: value}

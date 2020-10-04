@@ -10,7 +10,7 @@ import (
 
 type HashKey struct {
 	Type  ObjectType
-	Value uint64
+	Value string
 }
 
 type Hashable interface {

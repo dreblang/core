@@ -13,7 +13,7 @@ type Integer struct {
 func (i *Integer) Type() ObjectType { return IntegerObj }
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) HashKey() HashKey {
-	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
+	return HashKey{Type: i.Type(), Value: fmt.Sprint(i.Value)}
 }
 func (i *Integer) String() string { return fmt.Sprintf("%d", i.Value) }
 
