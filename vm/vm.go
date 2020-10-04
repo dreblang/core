@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dreblang/core/code"
@@ -8,13 +9,15 @@ import (
 	"github.com/dreblang/core/object"
 )
 
-const StackSize = 2048
+const StackSize = 4096
 const GlobalSize = 65536
-const MaxFrames = 1024
+const MaxFrames = 2048
 
 var True = object.True
 var False = object.False
 var Null = object.NullValue
+
+var stackOverflowErr = errors.New("stack overflow")
 
 type VM struct {
 	constants   []object.Object
@@ -306,7 +309,7 @@ func (vm *VM) LastPoppedStackElem() object.Object {
 
 func (vm *VM) push(o object.Object) error {
 	if vm.sp >= StackSize {
-		return fmt.Errorf("stack overflow")
+		return stackOverflowErr
 	}
 
 	vm.stack[vm.sp] = o
