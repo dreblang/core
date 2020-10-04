@@ -25,25 +25,29 @@ func (obj *String) GetMember(name string) Object {
 	switch name {
 	case "length":
 		return &Integer{Value: int64(len(obj.Value))}
+
 	case "sub":
 		return &MemberFn{
 			Obj: obj,
-			Fn:  StringSub,
+			Fn:  stringSub,
 		}
+
 	case "upper":
 		return &MemberFn{
 			Obj: obj,
-			Fn:  StringUpper,
+			Fn:  stringUpper,
 		}
+
 	case "lower":
 		return &MemberFn{
 			Obj: obj,
-			Fn:  StringLower,
+			Fn:  stringLower,
 		}
+
 	case "replace":
 		return &MemberFn{
 			Obj: obj,
-			Fn:  StringReplace,
+			Fn:  stringReplace,
 		}
 	}
 
@@ -53,82 +57,57 @@ func (obj *String) GetMember(name string) Object {
 func (obj *String) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:
-		return obj.Add(other)
+		switch val := other.(type) {
+		case *String:
+			return &String{
+				Value: obj.Value + val.Value,
+			}
+		}
+
 	case token.LessThan:
-		return obj.LessThan(other)
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value <= val.Value)
+		}
+
 	case token.LessOrEqual:
-		return obj.LessOrEqual(other)
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value <= val.Value)
+		}
+
 	case token.GreaterThan:
-		return obj.GreaterThan(other)
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value > val.Value)
+		}
+
 	case token.GreaterOrEqual:
-		return obj.GreaterOrEqual(other)
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value >= val.Value)
+		}
+
 	case token.Equal:
-		return obj.Equals(other)
-	case token.NotEqual:
-		return obj.NotEquals(other)
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value == val.Value)
+		default:
+			return False
+		}
+
+	case token.String:
+		switch val := other.(type) {
+		case *String:
+			return NativeBoolToBooleanObject(obj.Value != val.Value)
+		default:
+			return True
+		}
 	}
 	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
 
-func (obj *String) Add(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return &String{
-			Value: obj.Value + other.(*String).Value,
-		}
-	}
-	return newError("Could not concat string with type [%s]", other.Type())
-}
-
-func (obj *String) LessThan(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value < other.(*String).Value)
-	}
-	return newError("%s: %s < %s", typeMissMatchError, obj.Type(), other.Type())
-}
-
-func (obj *String) LessOrEqual(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value <= other.(*String).Value)
-	}
-	return newError("%s: %s <= %s", typeMissMatchError, obj.Type(), other.Type())
-}
-
-func (obj *String) GreaterThan(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value > other.(*String).Value)
-	}
-	return newError("%s: %s > %s", typeMissMatchError, obj.Type(), other.Type())
-}
-
-func (obj *String) GreaterOrEqual(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value >= other.(*String).Value)
-	}
-	return newError("%s: %s >= %s", typeMissMatchError, obj.Type(), other.Type())
-}
-
-func (obj *String) Equals(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value == other.(*String).Value)
-	}
-	return False
-}
-
-func (obj *String) NotEquals(other Object) Object {
-	switch other.Type() {
-	case StringObj:
-		return NativeBoolToBooleanObject(obj.Value != other.(*String).Value)
-	}
-	return True
-}
-
-func StringSub(this Object, args ...Object) Object {
+func stringSub(this Object, args ...Object) Object {
 	str := this.(*String)
 	switch len(args) {
 	case 0:
@@ -151,7 +130,7 @@ func StringSub(this Object, args ...Object) Object {
 	return newError("Could not execute sub-string operation. Invalid arguments!")
 }
 
-func StringUpper(this Object, args ...Object) Object {
+func stringUpper(this Object, args ...Object) Object {
 	str := this.(*String)
 	switch len(args) {
 	case 0:
@@ -162,7 +141,7 @@ func StringUpper(this Object, args ...Object) Object {
 	return newError("Could not execute string upper operation. Invalid arguments!")
 }
 
-func StringLower(this Object, args ...Object) Object {
+func stringLower(this Object, args ...Object) Object {
 	str := this.(*String)
 	switch len(args) {
 	case 0:
@@ -173,7 +152,7 @@ func StringLower(this Object, args ...Object) Object {
 	return newError("Could not execute string lower operation. Invalid arguments!")
 }
 
-func StringReplace(this Object, args ...Object) Object {
+func stringReplace(this Object, args ...Object) Object {
 	str := this.(*String)
 	switch len(args) {
 	case 2:

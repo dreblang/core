@@ -37,9 +37,20 @@ func (obj *Boolean) GetMember(name string) Object {
 func (obj *Boolean) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Equal:
-		return obj.Equals(other)
+		switch val := other.(type) {
+		case *Boolean:
+			return NativeBoolToBooleanObject(obj.Value == val.Value)
+		default:
+			return False
+		}
+
 	case token.NotEqual:
-		return obj.NotEquals(other)
+		switch val := other.(type) {
+		case *Boolean:
+			return NativeBoolToBooleanObject(obj.Value != val.Value)
+		default:
+			return True
+		}
 	}
 	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
