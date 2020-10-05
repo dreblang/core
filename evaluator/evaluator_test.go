@@ -122,6 +122,29 @@ func TestIfElseExpressions(t *testing.T) {
 	}
 }
 
+func TestLoopExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"i = 0; a = 0; loop (i < 10) { a = a + i; i = i + 1 }; a", 45},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		if integer, ok := tt.expected.(int); ok {
+			testNumberObject(t, evaluated, int64(integer))
+
+		} else if float, ok := tt.expected.(float64); ok {
+			testNumberObject(t, evaluated, float64(float))
+
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
 		input    string

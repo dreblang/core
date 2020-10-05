@@ -296,12 +296,12 @@ func (vm *VM) Run() error {
 	return nil
 }
 
-func (vm *VM) StackTop() object.Object {
-	if vm.sp == 0 {
-		return nil
-	}
-	return vm.stack[vm.sp-1]
-}
+// func (vm *VM) StackTop() object.Object {
+// 	if vm.sp == 0 {
+// 		return nil
+// 	}
+// 	return vm.stack[vm.sp-1]
+// }
 
 func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
@@ -381,12 +381,14 @@ func (vm *VM) executeBangOperator() error {
 func (vm *VM) executeMinusOperator() error {
 	operand := vm.pop()
 
-	if operand.Type() != object.IntegerObj {
-		return fmt.Errorf("unsupported type for negation: %s", operand.Type())
+	switch val := operand.(type) {
+	case *object.Integer:
+		return vm.push(&object.Integer{Value: -val.Value})
+	case *object.Float:
+		return vm.push(&object.Float{Value: -val.Value})
 	}
 
-	value := operand.(*object.Integer).Value
-	return vm.push(&object.Integer{Value: -value})
+	return fmt.Errorf("unsupported type for negation: %s", operand.Type())
 }
 
 func (vm *VM) executeIndexExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip object.Object) error {
