@@ -42,17 +42,13 @@ func (obj *Array) GetMember(name string) Object {
 func (obj *Array) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:
-		return obj.Add(other)
-	}
-	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
-}
-
-func (obj *Array) Add(other Object) Object {
-	switch other.Type() {
-	case ArrayObj:
-		return &Array{
-			Elements: append(obj.Elements, other.(*Array).Elements...),
+		switch val := other.(type) {
+		case *Array:
+			return &Array{
+				Elements: append(obj.Elements, val.Elements...),
+			}
 		}
 	}
-	return newError("Could not concat array with type [%s]", other.Type())
+
+	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }

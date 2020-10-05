@@ -54,19 +54,3 @@ func (obj *Boolean) InfixOperation(operator string, other Object) Object {
 	}
 	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
-
-func (obj *Boolean) Equals(other Object) Object {
-	switch other.Type() {
-	case BooleanObj:
-		return NativeBoolToBooleanObject(obj.Value == other.(*Boolean).Value)
-	}
-	return newError("Could not perform arithmetic operation")
-}
-
-func (obj *Boolean) NotEquals(other Object) Object {
-	switch other.Type() {
-	case BooleanObj:
-		return NativeBoolToBooleanObject(obj.Value != other.(*Boolean).Value)
-	}
-	return newError("Could not perform arithmetic operation")
-}
