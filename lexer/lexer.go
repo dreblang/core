@@ -77,7 +77,14 @@ func (l *Lexer) NextToken() token.Token {
 	case ';':
 		tok = newToken(token.Semicolon, l.ch)
 	case ':':
-		tok = newToken(token.Colon, l.ch)
+		if l.peekChar() == ':' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{Type: token.DoubleColon, Literal: literal}
+		} else {
+			tok = newToken(token.Colon, l.ch)
+		}
 	case '.':
 		tok = newToken(token.Dot, l.ch)
 	case '(':

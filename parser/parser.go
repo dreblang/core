@@ -19,6 +19,7 @@ const (
 	Product       // *
 	Prefix        // -X or !X
 	Dot           // obj.member
+	Scope         // scope::item
 	Call          // myFunction(X)
 	Index         // array[index]
 )
@@ -39,6 +40,7 @@ var precedences = map[token.TokenType]int{
 	token.LeftParen:      Call,
 	token.LeftBracket:    Index,
 	token.Dot:            Dot,
+	token.DoubleColon:    Scope,
 }
 
 type (
@@ -90,6 +92,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GreaterThan, p.parseInfixExpression)
 	p.registerInfix(token.GreaterOrEqual, p.parseInfixExpression)
 	p.registerInfix(token.Dot, p.parseMemberExpression)
+	p.registerInfix(token.DoubleColon, p.parseScopeResolutionExpression)
 	p.registerInfix(token.LeftParen, p.parseCallExpression)
 	p.registerInfix(token.LeftBracket, p.parseIndexExpression)
 
@@ -127,9 +130,12 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.Return:
 		return p.parseReturnStatement()
-	default:
-		return p.parseExpressionStatement()
+	case token.Scope:
+		return p.parseScopeDefinition()
+	case token.Export:
+		return p.parseExportStatement()
 	}
+	return p.parseExpressionStatement()
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
@@ -161,6 +167,36 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	// get value
 	p.nextToken()
 	stmt.ReturnValue = p.parseExpression(Lowest)
+
+	if p.peekTokenIs(token.Semicolon) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseScopeDefinition() *ast.ScopeDefinition {
+	sd := &ast.ScopeDefinition{Token: p.currentToken}
+
+	if !p.expectPeek(token.Identifier) {
+		return nil
+	}
+
+	sd.Name = &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+
+	if !p.expectPeek(token.LeftBrace) {
+		return nil
+	}
+	sd.Block = p.parseBlockStatement()
+	return sd
+}
+
+func (p *Parser) parseExportStatement() *ast.ExportStatement {
+	stmt := &ast.ExportStatement{Token: p.currentToken}
+
+	// get value
+	p.nextToken()
+	stmt.Identifier = p.parseIdentifier().(*ast.Identifier)
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
@@ -467,6 +503,18 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 }
 
 func (p *Parser) parseMemberExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InfixExpression{
+		Token:    p.currentToken,
+		Operator: p.currentToken.Literal,
+		Left:     left,
+	}
+	p.nextToken()
+	right := p.parseStringLiteral()
+	expression.Right = right
+	return expression
+}
+
+func (p *Parser) parseScopeResolutionExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{
 		Token:    p.currentToken,
 		Operator: p.currentToken.Literal,

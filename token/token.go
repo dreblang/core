@@ -34,10 +34,11 @@ const (
 	GreaterOrEqual = ">="
 
 	// Delimiters
-	Comma     = ","
-	Semicolon = ";"
-	Colon     = ":"
-	Dot       = "."
+	Comma       = ","
+	Semicolon   = ";"
+	Colon       = ":"
+	DoubleColon = "::"
+	Dot         = "."
 
 	LeftParen    = "("
 	RightParen   = ")"
@@ -55,6 +56,8 @@ const (
 	Else     = "Else"
 	Return   = "Return"
 	Loop     = "Loop"
+	Scope    = "Scope"
+	Export   = "Export"
 )
 
 var keywords = map[string]TokenType{
@@ -66,6 +69,8 @@ var keywords = map[string]TokenType{
 	"else":   Else,
 	"return": Return,
 	"loop":   Loop,
+	"scope":  Scope,
+	"export": Export,
 }
 
 func LookupIdentifierType(identifier string) TokenType {
