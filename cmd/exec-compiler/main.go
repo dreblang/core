@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -26,7 +27,11 @@ func main() {
 	}
 
 	comp := compiler.NewWithState(symbolTable, constants)
-	comp.Compile(program)
+	err := comp.Compile(program)
+	if err != nil {
+		fmt.Println("Compile error:", err)
+		return
+	}
 	code := comp.Bytecode()
 	constants = code.Constants
 
