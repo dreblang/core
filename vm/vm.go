@@ -18,6 +18,7 @@ var False = object.False
 var Null = object.NullValue
 
 var stackOverflowErr = errors.New("stack overflow")
+var frameOverflowErr = errors.New("frame overflow")
 
 type VM struct {
 	constants   []object.Object
@@ -418,11 +419,15 @@ func (vm *VM) currentFrame() *Frame {
 	return vm.frames[vm.framesIndex-1]
 }
 
-func (vm *VM) pushFrame(f *Frame) {
+func (vm *VM) pushFrame(f *Frame) error {
+	if vm.framesIndex >= MaxFrames {
+		return frameOverflowErr
+	}
 	vm.frames[vm.framesIndex] = f
 	vm.framesIndex++
 
 	vm.curFrame = vm.currentFrame()
+	return nil
 }
 
 func (vm *VM) popFrame() *Frame {
@@ -453,7 +458,10 @@ func (vm *VM) callClosure(cl *object.Closure, numArgs int) error {
 	}
 
 	frame := NewFrame(cl, vm.sp-numArgs)
-	vm.pushFrame(frame)
+	err := vm.pushFrame(frame)
+	if err != nil {
+		return err
+	}
 
 	vm.sp = frame.basePointer + cl.Fn.NumLocals
 

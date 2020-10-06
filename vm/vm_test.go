@@ -604,6 +604,71 @@ func TestRecursiveFibonacci(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestErrors(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input:    `a = 10; a(100)`,
+			expected: `calling non-function and non-built-in`,
+		},
+		{
+			input:    `a = fn(){100;}; a < 10`,
+			expected: `type mismatch: Integer > Closure`,
+		},
+		{
+			input:    `a = fn(){100;}; a + 10`,
+			expected: `unknown eval operator: Closure + Integer`,
+		},
+		{
+			input:    `a = fn(){100;}; 10 + a`,
+			expected: `type mismatch: Integer + Closure`,
+		},
+		{
+			input:    `-'hello'`,
+			expected: `unsupported type for negation: String`,
+		},
+		{
+			input:    `a = fn(){100;}; a[10]`,
+			expected: `index operator not supported: Closure`,
+		},
+		{
+			input:    `a = fn(){100;}; b = {a: 10}`,
+			expected: `unusable as hash key: Closure`,
+		},
+		{
+			input:    `a = fn(){100;}; b = {10: a}; b[a]`,
+			expected: `unusable as hash key: Closure`,
+		},
+		{
+			input:    `let a = fn() { a() }; a();`,
+			expected: "frame overflow",
+		},
+		{
+			input:    `let a = fn() { let b = 10; let c = 100; let d = 200; let e = 1000; a() }; a();`,
+			expected: "stack overflow",
+		},
+	}
+
+	for _, tt := range tests {
+		program := parse(tt.input)
+
+		comp := compiler.New()
+		err := comp.Compile(program)
+		if err != nil {
+			t.Fatalf("compiler error: %s", err)
+		}
+
+		vm := New(comp.Bytecode())
+		err = vm.Run()
+		if err == nil {
+			t.Fatalf("expected VM error but resulted in none.")
+		}
+
+		if err.Error() != tt.expected {
+			t.Fatalf("wrong VM error: want=%q, got=%q", tt.expected, err.Error())
+		}
+	}
+}
+
 func runVmTests(t *testing.T, tests []vmTestCase) {
 	t.Helper()
 
