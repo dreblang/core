@@ -192,6 +192,17 @@ func TestMemberExpressions(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestSettingOnIndex(t *testing.T) {
+	tests := []vmTestCase{
+		{"let a = [1,2,3]; a[0] = 10; a[0]", 10},
+		{"let a = {0: 'hello'}; a[0] = 'world'; a[0]", "world"},
+		{"let a = {0: 'hello'}; a[1] = 'world'; a[1]", "world"},
+		{"let a = {0: 'hello'}; a[1] = 'world'; a[0]", "hello"},
+	}
+
+	runVmTests(t, tests)
+}
+
 func TestCallingFunctionsWithoutArguments(t *testing.T) {
 	tests := []vmTestCase{
 		{
