@@ -119,7 +119,36 @@ func (c *Compiler) Compile(node ast.Node) error {
 				}
 
 			case *ast.IndexExpression:
-				return fmt.Errorf("Cannot assign to array element")
+				c.Compile(leftNode.Left)
+				if leftNode.Index != nil {
+					err = c.Compile(leftNode.Index)
+					if err != nil {
+						return err
+					}
+				} else {
+					c.emit(code.OpConstant, c.addConstant(&object.Integer{}))
+				}
+
+				if leftNode.IndexUpper != nil {
+					err = c.Compile(leftNode.IndexUpper)
+					if err != nil {
+						return err
+					}
+				} else {
+					c.emit(code.OpNull)
+				}
+				c.emit(code.OpConstant, c.addConstant(object.NativeBoolToBooleanObject(leftNode.HasUpper)))
+
+				if leftNode.IndexSkip != nil {
+					err = c.Compile(leftNode.IndexSkip)
+					if err != nil {
+						return err
+					}
+				} else {
+					c.emit(code.OpConstant, c.addConstant(&object.Integer{Value: 1}))
+				}
+				c.emit(code.OpConstant, c.addConstant(object.NativeBoolToBooleanObject(leftNode.HasSkip)))
+				c.emit(code.OpIndexSet)
 			}
 
 			return nil

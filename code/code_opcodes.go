@@ -26,6 +26,7 @@ const (
 	OpArray
 	OpHash
 	OpIndex
+	OpIndexSet
 	OpCall
 	OpReturnValue
 	OpReturn

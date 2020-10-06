@@ -159,6 +159,17 @@ func (vm *VM) Run() error {
 			index := vm.pop()
 			left := vm.pop()
 			err = vm.executeIndexExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip)
+
+		case code.OpIndexSet:
+			hasSkip := vm.pop()
+			indexSkip := vm.pop()
+			hasUpper := vm.pop()
+			indexUpper := vm.pop()
+			index := vm.pop()
+			left := vm.pop()
+			right := vm.pop()
+			err = vm.executeIndexSetExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip, right)
+
 		case code.OpCall:
 			numArgs := code.ReadUint8(ins[ip+1:])
 			vm.curFrame.ip += 1
@@ -328,6 +339,18 @@ func (vm *VM) executeIndexExpression(left, index, indexUpper, indexSkip, hasUppe
 	}
 }
 
+func (vm *VM) executeIndexSetExpression(left, index, indexUpper, indexSkip, hasUpper, hasSkip, right object.Object) error {
+	switch {
+	case left.Type() == object.ArrayObj:
+		return vm.executeArrayIndexSet(left, index, indexUpper, indexSkip, hasUpper, hasSkip, right)
+
+	case left.Type() == object.HashObj:
+		return vm.executeHashIndexSet(left, index, right)
+	default:
+		return fmt.Errorf("index set operator not supported: %s", left.Type())
+	}
+}
+
 func (vm *VM) executeArrayIndex(array, index, indexUpper, indexSkip, hasUpper, hasSkip object.Object) error {
 	arrayObject := array.(*object.Array)
 	idx := index.(*object.Integer).Value
@@ -369,6 +392,48 @@ func (vm *VM) executeArrayIndex(array, index, indexUpper, indexSkip, hasUpper, h
 	})
 }
 
+func (vm *VM) executeArrayIndexSet(array, index, indexUpper, indexSkip, hasUpper, hasSkip, right object.Object) error {
+	arrayObject := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements))
+
+	// var idxUpper int64 = max
+
+	if idx < 0 {
+		idx = max + idx
+	}
+
+	if !isTruthy(hasUpper) {
+		if idx >= max {
+			return fmt.Errorf("Index out of bounds!")
+		}
+		arrayObject.Elements[idx] = right
+		return nil
+	}
+	return fmt.Errorf("Cannot assign range!")
+	// TODO: Implement setting of array
+	// if indexUpper != object.NullObject {
+	// 	idxUpper = indexUpper.(*object.Integer).Value
+	// }
+	// if idxUpper < 0 {
+	// 	idxUpper += max
+	// }
+
+	// var inc int64 = 1
+	// if isTruthy(hasSkip) {
+	// 	inc = indexSkip.(*object.Integer).Value
+	// }
+
+	// elements := make([]object.Object, 0)
+
+	// for i := idx; i < idxUpper; i += inc {
+	// 	elements = append(elements, arrayObject.Elements[i])
+	// }
+	// return vm.push(&object.Array{
+	// 	Elements: elements,
+	// })
+}
+
 func (vm *VM) executeHashIndex(hash, index object.Object) error {
 	hashObject := hash.(*object.Hash)
 
@@ -383,6 +448,21 @@ func (vm *VM) executeHashIndex(hash, index object.Object) error {
 	}
 
 	return vm.push(pair.Value)
+}
+
+func (vm *VM) executeHashIndexSet(hash, index, right object.Object) error {
+	hashObject := hash.(*object.Hash)
+
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return fmt.Errorf("unusable as hash key: %s", index.Type())
+	}
+
+	hashObject.Pairs[key.HashKey()] = object.HashPair{
+		Key:   index,
+		Value: right,
+	}
+	return nil
 }
 
 func (vm *VM) buildArray(startIndex, endIndex int) object.Object {
