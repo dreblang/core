@@ -1,10 +1,17 @@
-loopfunc = fn(n) {
-	a = 0
-	sum = 0
-	loop (a < n) {
-		sum = a + sum
-		a = a + 1
-	}
-	return sum
+scope math {
+  let pi = 3.14159265358979
+  let sqr = fn(a) { return a * a }
+  export sqr
+  export pi
 }
-puts(loopfunc(10000000))
+
+scope test {
+  let a = 100;
+  let fun = fn() { let a = a + 1; return a; }
+  export fun
+}
+
+puts(test::fun())
+puts(test::fun())
+
+puts(math::sqr(math::pi))

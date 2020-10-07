@@ -29,6 +29,9 @@ type VM struct {
 	framesIndex int
 
 	curFrame *Frame
+
+	scopes  map[string]*object.Scope
+	exports map[string]object.Object
 }
 
 func New(bytecode *compiler.Bytecode) *VM {
@@ -47,6 +50,9 @@ func New(bytecode *compiler.Bytecode) *VM {
 		frames:      frames,
 		framesIndex: 1,
 		curFrame:    mainFrame,
+
+		scopes:  map[string]*object.Scope{},
+		exports: map[string]object.Object{},
 	}
 }
 
@@ -88,7 +94,6 @@ func (vm *VM) Run() error {
 			err = vm.executeBinaryOperation("/")
 		case code.OpMod:
 			err = vm.executeBinaryOperation("%")
-
 		case code.OpMember:
 			err = vm.executeMemberOperation(op)
 		case code.OpTrue:
@@ -216,12 +221,57 @@ func (vm *VM) Run() error {
 
 			err = vm.pushClosure(int(constIndex), int(numFree))
 
+		case code.OpSetFree:
+			freeIndex := code.ReadUint8(ins[ip+1:])
+			vm.curFrame.ip += 1
+
+			currentClosure := vm.curFrame.cl
+			val := vm.pop()
+			currentClosure.Free[freeIndex] = val
+			err = vm.push(val)
+
 		case code.OpGetFree:
 			freeIndex := code.ReadUint8(ins[ip+1:])
 			vm.curFrame.ip += 1
 
 			currentClosure := vm.curFrame.cl
 			err = vm.push(currentClosure.Free[freeIndex])
+
+		case code.OpScope:
+			scopeConst := code.ReadUint16(ins[ip+1:])
+			vm.curFrame.ip += 2
+			fmt.Println(scopeConst)
+
+			// scope := vm.constants[scopeConst]
+			// if scopeObj, ok := scope.(*object.Scope); ok {
+			// 	vm.scopes[scopeObj.Name] = scopeObj
+
+			// 	nglobals := make([]object.Object, GlobalSize)
+			// 	// nvm := NewWithGlobalsStore(&compiler.Bytecode{
+			// 	// 	Instructions: scopeObj.Instructions,
+			// 	// 	Constants:    vm.constants,
+			// 	// }, nglobals)
+			// 	// err := nvm.Run()
+			// 	scopeFrame := &Frame{}
+
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// 	scopeObj.Exports = nvm.exports
+			// 	fmt.Println(scopeObj.NumLocals, "locals")
+			// }
+
+		case code.OpScopeResolve:
+			name := vm.pop()
+			scope := vm.pop()
+			callable := scope.GetMember(name.String())
+			// fmt.Println("scope_resolved_to", callable)
+			vm.push(callable)
+
+		case code.OpExport:
+			val := vm.pop()
+			name := vm.pop()
+			vm.exports[name.(*object.String).Value] = val
 		}
 
 		if err != nil {

@@ -35,5 +35,9 @@ const (
 	OpGetBuiltin
 	OpClosure
 	OpGetFree
+	OpSetFree
 	OpMember
+	OpExport
+	OpScope
+	OpScopeResolve
 )

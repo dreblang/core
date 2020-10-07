@@ -46,7 +46,11 @@ var definitions = map[Opcode]*Definition{
 	OpGetBuiltin:     {"OpGetBuiltin", []int{1}},
 	OpClosure:        {"OpClosure", []int{2, 1}},
 	OpGetFree:        {"OpGetFree", []int{1}},
+	OpSetFree:        {"OpSetFree", []int{1}},
 	OpMember:         {"OpMember", []int{}},
+	OpExport:         {"OpExport", []int{}},
+	OpScope:          {"OpScope", []int{2}},
+	OpScopeResolve:   {"OpScopeResolve", []int{}},
 }
 
 var OpCodeToOperatorMap = map[Opcode]string{

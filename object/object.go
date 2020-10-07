@@ -16,6 +16,7 @@ const (
 	HashObj             = "Hash"
 	CompiledFunctionObj = "CompiledFunction"
 	ClosureObj          = "Closure"
+	ScopeObj            = "Scope"
 )
 
 type Object interface {
