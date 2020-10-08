@@ -263,13 +263,6 @@ func (vm *VM) Run() error {
 	return nil
 }
 
-// func (vm *VM) StackTop() object.Object {
-// 	if vm.sp == 0 {
-// 		return nil
-// 	}
-// 	return vm.stack[vm.sp-1]
-// }
-
 func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
 }

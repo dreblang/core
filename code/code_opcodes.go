@@ -1,6 +1,6 @@
 package code
 
-type Opcode int
+type Opcode byte
 
 const (
 	OpConstant Opcode = iota
