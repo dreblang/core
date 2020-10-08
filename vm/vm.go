@@ -29,9 +29,6 @@ type VM struct {
 	framesIndex int
 
 	curFrame *Frame
-
-	scopes  map[string]*object.Scope
-	exports map[string]object.Object
 }
 
 func New(bytecode *compiler.Bytecode) *VM {
@@ -50,9 +47,6 @@ func New(bytecode *compiler.Bytecode) *VM {
 		frames:      frames,
 		framesIndex: 1,
 		curFrame:    mainFrame,
-
-		scopes:  map[string]*object.Scope{},
-		exports: map[string]object.Object{},
 	}
 }
 
