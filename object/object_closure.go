@@ -5,8 +5,9 @@ import (
 )
 
 type Closure struct {
-	Fn   *CompiledFunction
-	Free []Object
+	Fn      *CompiledFunction
+	Free    []Object
+	Exports map[string]Object
 }
 
 func (c *Closure) Type() ObjectType { return ClosureObj }

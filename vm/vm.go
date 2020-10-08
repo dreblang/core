@@ -36,7 +36,7 @@ type VM struct {
 
 func New(bytecode *compiler.Bytecode) *VM {
 	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
-	mainClosure := &object.Closure{Fn: mainFn}
+	mainClosure := &object.Closure{Fn: mainFn, Exports: map[string]object.Object{}}
 	mainFrame := NewFrame(mainClosure, 0)
 
 	frames := make([]*Frame, MaxFrames)
@@ -265,13 +265,12 @@ func (vm *VM) Run() error {
 			name := vm.pop()
 			scope := vm.pop()
 			callable := scope.GetMember(name.String())
-			// fmt.Println("scope_resolved_to", callable)
 			vm.push(callable)
 
 		case code.OpExport:
 			val := vm.pop()
 			name := vm.pop()
-			vm.exports[name.(*object.String).Value] = val
+			vm.curFrame.cl.Exports[name.(*object.String).Value] = val
 		}
 
 		if err != nil {
@@ -571,6 +570,7 @@ func (vm *VM) executeCall(numArgs int) error {
 	callee := vm.stack[vm.sp-1-numArgs]
 	switch callee := callee.(type) {
 	case *object.Closure:
+		fmt.Println("call", callee.Fn.Instructions)
 		return vm.callClosure(callee, numArgs)
 	case *object.Builtin:
 		return vm.callBuiltin(callee, numArgs)
@@ -641,7 +641,7 @@ func (vm *VM) pushClosure(constIndex, numFree int) error {
 	}
 	vm.sp = vm.sp - numFree
 
-	closure := &object.Closure{Fn: function, Free: free}
+	closure := &object.Closure{Fn: function, Free: free, Exports: map[string]object.Object{}}
 	return vm.push(closure)
 }
 

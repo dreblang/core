@@ -436,10 +436,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.emit(code.OpClosure, fnIndex, len(freeSymbols))
 
 	case *ast.ScopeDefinition:
-		// newSymbolTable := NewSymbolTable()
-		// newConstants := []object.Object{}
-		// newc := NewWithState(newSymbolTable, newConstants)
-
 		c.enterScope()
 
 		err := c.Compile(node.Block)
@@ -447,22 +443,29 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		numLocals := c.symbolTable.numDefinitions
+		if c.lastInstructionIs(code.OpPop) {
+			c.replaceLastPopWithReturn()
+		}
+		if !c.lastInstructionIs(code.OpReturnValue) {
+			c.emit(code.OpReturn)
+		}
 
+		freeSymbols := c.symbolTable.FreeSymbols
+		numLocals := c.symbolTable.numDefinitions
 		instructions := c.leaveScope()
 
-		scopeObj := &object.Scope{
-			Name:         node.Name.Value,
-			Instructions: instructions,
-			NumLocals:    numLocals,
-			Exports:      map[string]object.Object{},
+		compiledFn := &object.CompiledFunction{
+			Instructions:  instructions,
+			NumLocals:     numLocals,
+			NumParameters: 0,
 		}
-		scIndex := c.addConstant(scopeObj)
-		c.emit(code.OpScope, scIndex)
+		fnIndex := c.addConstant(compiledFn)
+		c.emit(code.OpClosure, fnIndex, len(freeSymbols))
+		c.emit(code.OpCall, 0)
 
-		c.emit(code.OpConstant, scIndex)
-		symbol := c.symbolTable.Define(node.Name.Value)
-		c.saveSymbol(symbol)
+		// c.emit(code.OpConstant, scIndex)
+		// symbol := c.symbolTable.Define(node.Name.Value)
+		// c.saveSymbol(symbol)
 
 	case *ast.ExportStatement:
 		nameConst := c.addConstant(&object.String{Value: node.Identifier.Value})
