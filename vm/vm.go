@@ -423,7 +423,7 @@ func (vm *VM) executeArrayIndexSet(array, index, indexUpper, indexSkip, hasUpper
 
 	if !isTruthy(hasUpper) {
 		if idx >= max {
-			return fmt.Errorf("Index out of bounds!")
+			return fmt.Errorf("index out of bounds")
 		}
 		arrayObject.Elements[idx] = right
 		return nil
@@ -598,10 +598,7 @@ func (vm *VM) callMember(memberfn *object.MemberFn, numArgs int) error {
 
 func (vm *VM) pushClosure(constIndex, numFree int) error {
 	constant := vm.constants[constIndex]
-	function, ok := constant.(*object.CompiledFunction)
-	if !ok {
-		return fmt.Errorf("not a function: %+v", constant)
-	}
+	function := constant.(*object.CompiledFunction)
 
 	free := make([]object.Object, numFree)
 	for i := 0; i < numFree; i++ {
