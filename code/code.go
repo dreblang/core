@@ -49,7 +49,7 @@ var definitions = map[Opcode]*Definition{
 	OpSetFree:        {"OpSetFree", []int{1}},
 	OpMember:         {"OpMember", []int{}},
 	OpExport:         {"OpExport", []int{}},
-	OpScope:          {"OpScope", []int{2}},
+	OpScope:          {"OpScope", []int{}},
 	OpScopeResolve:   {"OpScopeResolve", []int{}},
 }
 

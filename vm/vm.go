@@ -238,28 +238,10 @@ func (vm *VM) Run() error {
 			err = vm.push(currentClosure.Free[freeIndex])
 
 		case code.OpScope:
-			scopeConst := code.ReadUint16(ins[ip+1:])
-			vm.curFrame.ip += 2
-			fmt.Println(scopeConst)
-
-			// scope := vm.constants[scopeConst]
-			// if scopeObj, ok := scope.(*object.Scope); ok {
-			// 	vm.scopes[scopeObj.Name] = scopeObj
-
-			// 	nglobals := make([]object.Object, GlobalSize)
-			// 	// nvm := NewWithGlobalsStore(&compiler.Bytecode{
-			// 	// 	Instructions: scopeObj.Instructions,
-			// 	// 	Constants:    vm.constants,
-			// 	// }, nglobals)
-			// 	// err := nvm.Run()
-			// 	scopeFrame := &Frame{}
-
-			// 	if err != nil {
-			// 		return err
-			// 	}
-			// 	scopeObj.Exports = nvm.exports
-			// 	fmt.Println(scopeObj.NumLocals, "locals")
-			// }
+			scopeObj := &object.Scope{
+				Exports: vm.curFrame.cl.Exports,
+			}
+			vm.push(scopeObj)
 
 		case code.OpScopeResolve:
 			name := vm.pop()
@@ -570,7 +552,6 @@ func (vm *VM) executeCall(numArgs int) error {
 	callee := vm.stack[vm.sp-1-numArgs]
 	switch callee := callee.(type) {
 	case *object.Closure:
-		fmt.Println("call", callee.Fn.Instructions)
 		return vm.callClosure(callee, numArgs)
 	case *object.Builtin:
 		return vm.callBuiltin(callee, numArgs)

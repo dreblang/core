@@ -442,13 +442,8 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
-
-		if c.lastInstructionIs(code.OpPop) {
-			c.replaceLastPopWithReturn()
-		}
-		if !c.lastInstructionIs(code.OpReturnValue) {
-			c.emit(code.OpReturn)
-		}
+		c.emit(code.OpScope)
+		c.emit(code.OpReturnValue)
 
 		freeSymbols := c.symbolTable.FreeSymbols
 		numLocals := c.symbolTable.numDefinitions
@@ -463,9 +458,8 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.emit(code.OpClosure, fnIndex, len(freeSymbols))
 		c.emit(code.OpCall, 0)
 
-		// c.emit(code.OpConstant, scIndex)
-		// symbol := c.symbolTable.Define(node.Name.Value)
-		// c.saveSymbol(symbol)
+		symbol := c.symbolTable.Define(node.Name.Value)
+		c.saveSymbol(symbol)
 
 	case *ast.ExportStatement:
 		nameConst := c.addConstant(&object.String{Value: node.Identifier.Value})
