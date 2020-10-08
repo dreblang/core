@@ -177,7 +177,7 @@ func (vm *VM) Run() error {
 
 		case code.OpCall:
 			numArgs := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			err = vm.executeCall(int(numArgs))
 		case code.OpReturnValue:
@@ -194,7 +194,7 @@ func (vm *VM) Run() error {
 			err = vm.push(Null)
 		case code.OpSetLocal:
 			localIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			frame := vm.curFrame
 			val := vm.pop()
@@ -202,14 +202,14 @@ func (vm *VM) Run() error {
 			err = vm.push(val)
 		case code.OpGetLocal:
 			localIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			frame := vm.curFrame
 
 			err = vm.push(vm.stack[frame.basePointer+int(localIndex)])
 		case code.OpGetBuiltin:
 			builtinIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			definition := object.Builtins[builtinIndex]
 
@@ -223,7 +223,7 @@ func (vm *VM) Run() error {
 
 		case code.OpSetFree:
 			freeIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			currentClosure := vm.curFrame.cl
 			val := vm.pop()
@@ -232,7 +232,7 @@ func (vm *VM) Run() error {
 
 		case code.OpGetFree:
 			freeIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			currentClosure := vm.curFrame.cl
 			err = vm.push(currentClosure.Free[freeIndex])
