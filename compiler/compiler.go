@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"plugin"
 	"sort"
 
 	"github.com/dreblang/core/ast"
@@ -471,6 +472,9 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.loadSymbol(symbol)
 		c.emit(code.OpExport)
 
+	case *ast.LoadStatement:
+		c.loadModule(node.Identifier.Value)
+
 	default:
 		fmt.Println("Unknown ast type!")
 	}
@@ -584,6 +588,23 @@ func (c *Compiler) replaceLastPopWithReturn() {
 	c.replaceInstruction(lastPos, code.Make(code.OpReturnValue))
 
 	c.scopes[c.scopeIndex].lastInstruction.Opcode = code.OpReturnValue
+}
+
+func (c *Compiler) loadModule(m string) {
+	// TODO: Look for module in search paths
+	plg, err := plugin.Open(m + ".so")
+	if err != nil {
+		fmt.Println("Plugin error: ", err)
+		return
+	}
+	sym, err := plg.Lookup("Load")
+	if err != nil {
+		fmt.Println("Lookup error: ", err)
+		return
+	}
+
+	scope := sym.(func() *object.Scope)()
+	fmt.Println(scope)
 }
 
 func (c *Compiler) loadSymbol(s Symbol) {

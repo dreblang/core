@@ -58,6 +58,7 @@ const (
 	Loop     = "Loop"
 	Scope    = "Scope"
 	Export   = "Export"
+	Load     = "Load"
 )
 
 var keywords = map[string]TokenType{
@@ -71,6 +72,7 @@ var keywords = map[string]TokenType{
 	"loop":   Loop,
 	"scope":  Scope,
 	"export": Export,
+	"load":   Load,
 }
 
 func LookupIdentifierType(identifier string) TokenType {
