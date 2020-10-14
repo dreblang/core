@@ -130,6 +130,22 @@ func TestArrayLiterals(t *testing.T) {
 		{"[]", []int{}},
 		{"[1, 2, 3]", []int{1, 2, 3}},
 		{"[1 + 2, 3 * 4, 5 + 6]", []int{3, 12, 11}},
+		{
+			`
+			a = [1,2,3,4];
+			a[0] = 10;
+			a;
+			`,
+			[]int{10, 2, 3, 4},
+		},
+		{
+			`
+			a = [1,2,3,4];
+			a[-1] = 10;
+			a;
+			`,
+			[]int{1, 2, 3, 10},
+		},
 	}
 
 	runVmTests(t, tests)
@@ -481,32 +497,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		},
 		{`len([1, 2, 3])`, 3},
 		{`len([])`, 0},
-		{`puts("hello", "world!")`, Null},
-		{`first([1, 2, 3])`, 1},
-		{`first([])`, Null},
-		{
-			`first(1)`,
-			&object.Error{
-				Message: fmt.Sprintf("argument to %q must be %s, got %s", object.BuiltinFuncNameFirst, object.ArrayObj, object.IntegerObj),
-			},
-		},
-		{`last([1, 2, 3])`, 3},
-		{`last([])`, Null},
-		{
-			`last(1)`,
-			&object.Error{
-				Message: fmt.Sprintf("argument to %q must be %s, got %s", object.BuiltinFuncNameLast, object.ArrayObj, object.IntegerObj),
-			},
-		},
-		{`rest([1, 2, 3])`, []int{2, 3}},
-		{`rest([])`, Null},
-		{`push([], 1)`, []int{1}},
-		{
-			`push(1, 1)`,
-			&object.Error{
-				Message: fmt.Sprintf("argument to %q must be %s, got %s", object.BuiltinFuncNamePush, object.ArrayObj, object.IntegerObj),
-			},
-		},
+		{`print("hello", "world!")`, Null},
 	}
 
 	runVmTests(t, tests)
@@ -586,6 +577,29 @@ func TestClosures(t *testing.T) {
 		`,
 			expected: 99,
 		},
+		{
+			input: `
+		let outer = fn() {
+			let a = 100
+			let inner = fn() { a = a+1; return a; };
+			return inner
+		};
+		inner = outer();
+		inner();
+		inner();
+		`,
+			expected: 102,
+		},
+		{
+			input: `
+		scope hello {
+			pi = 3.14;
+			export pi
+		}
+		hello::pi;
+		`,
+			expected: 3.14,
+		},
 	}
 
 	runVmTests(t, tests)
@@ -609,6 +623,20 @@ func TestRecursiveFibonacci(t *testing.T) {
 				fibonacci(15);`,
 			expected: 610,
 		},
+	}
+
+	runVmTests(t, tests)
+}
+
+func TestTypeConversions(t *testing.T) {
+	tests := []vmTestCase{
+		{input: `int(10)`, expected: 10},
+		{input: `int(10.1)`, expected: 10},
+		{input: `int('10')`, expected: 10},
+		{input: `float(10)`, expected: 10.0},
+		{input: `float(3.14)`, expected: 3.14},
+		{input: `float('3.14')`, expected: 3.14},
+		{input: `string(3.14)`, expected: "3.14"},
 	}
 
 	runVmTests(t, tests)
@@ -655,6 +683,18 @@ func TestErrors(t *testing.T) {
 		{
 			input:    `let a = fn() { let b = 10; let c = 100; let d = 200; let e = 1000; a() }; a();`,
 			expected: "stack overflow",
+		},
+		{
+			input:    `let a = 10; a[0] = 20`,
+			expected: "index set operator not supported: Integer",
+		},
+		{
+			input:    `let a = [0]; a[1] = 20`,
+			expected: "index out of bounds",
+		},
+		{
+			input:    `let a = {}; let b = fn() { 0; } a[b] = 20`,
+			expected: "unusable as hash key: Closure",
 		},
 	}
 

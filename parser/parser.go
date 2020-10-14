@@ -134,6 +134,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseScopeDefinition()
 	case token.Export:
 		return p.parseExportStatement()
+	case token.Load:
+		return p.parseLoadStatement()
 	}
 	return p.parseExpressionStatement()
 }
@@ -193,6 +195,20 @@ func (p *Parser) parseScopeDefinition() *ast.ScopeDefinition {
 
 func (p *Parser) parseExportStatement() *ast.ExportStatement {
 	stmt := &ast.ExportStatement{Token: p.currentToken}
+
+	// get value
+	p.nextToken()
+	stmt.Identifier = p.parseIdentifier().(*ast.Identifier)
+
+	if p.peekTokenIs(token.Semicolon) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseLoadStatement() *ast.LoadStatement {
+	stmt := &ast.LoadStatement{Token: p.currentToken}
 
 	// get value
 	p.nextToken()

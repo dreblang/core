@@ -807,18 +807,12 @@ func TestBuiltins(t *testing.T) {
 		{
 			input: `
 			len([]);
-			push([], 1);
 			`,
-			expectedConstants: []interface{}{1},
+			expectedConstants: []interface{}{},
 			expectedInstructions: []code.Instructions{
 				code.Make(code.OpGetBuiltin, 0),
 				code.Make(code.OpArray, 0),
 				code.Make(code.OpCall, 1),
-				code.Make(code.OpPop),
-				code.Make(code.OpGetBuiltin, 5),
-				code.Make(code.OpArray, 0),
-				code.Make(code.OpConstant, 0),
-				code.Make(code.OpCall, 2),
 				code.Make(code.OpPop),
 			},
 		},

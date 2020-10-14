@@ -29,9 +29,6 @@ type VM struct {
 	framesIndex int
 
 	curFrame *Frame
-
-	scopes  map[string]*object.Scope
-	exports map[string]object.Object
 }
 
 func New(bytecode *compiler.Bytecode) *VM {
@@ -50,9 +47,6 @@ func New(bytecode *compiler.Bytecode) *VM {
 		frames:      frames,
 		framesIndex: 1,
 		curFrame:    mainFrame,
-
-		scopes:  map[string]*object.Scope{},
-		exports: map[string]object.Object{},
 	}
 }
 
@@ -177,7 +171,7 @@ func (vm *VM) Run() error {
 
 		case code.OpCall:
 			numArgs := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			err = vm.executeCall(int(numArgs))
 		case code.OpReturnValue:
@@ -194,7 +188,7 @@ func (vm *VM) Run() error {
 			err = vm.push(Null)
 		case code.OpSetLocal:
 			localIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			frame := vm.curFrame
 			val := vm.pop()
@@ -202,14 +196,14 @@ func (vm *VM) Run() error {
 			err = vm.push(val)
 		case code.OpGetLocal:
 			localIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			frame := vm.curFrame
 
 			err = vm.push(vm.stack[frame.basePointer+int(localIndex)])
 		case code.OpGetBuiltin:
 			builtinIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			definition := object.Builtins[builtinIndex]
 
@@ -223,7 +217,7 @@ func (vm *VM) Run() error {
 
 		case code.OpSetFree:
 			freeIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			currentClosure := vm.curFrame.cl
 			val := vm.pop()
@@ -232,7 +226,7 @@ func (vm *VM) Run() error {
 
 		case code.OpGetFree:
 			freeIndex := code.ReadUint8(ins[ip+1:])
-			vm.curFrame.ip += 1
+			vm.curFrame.ip++
 
 			currentClosure := vm.curFrame.cl
 			err = vm.push(currentClosure.Free[freeIndex])
@@ -262,13 +256,6 @@ func (vm *VM) Run() error {
 
 	return nil
 }
-
-// func (vm *VM) StackTop() object.Object {
-// 	if vm.sp == 0 {
-// 		return nil
-// 	}
-// 	return vm.stack[vm.sp-1]
-// }
 
 func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
@@ -436,7 +423,7 @@ func (vm *VM) executeArrayIndexSet(array, index, indexUpper, indexSkip, hasUpper
 
 	if !isTruthy(hasUpper) {
 		if idx >= max {
-			return fmt.Errorf("Index out of bounds!")
+			return fmt.Errorf("index out of bounds")
 		}
 		arrayObject.Elements[idx] = right
 		return nil
@@ -611,10 +598,7 @@ func (vm *VM) callMember(memberfn *object.MemberFn, numArgs int) error {
 
 func (vm *VM) pushClosure(constIndex, numFree int) error {
 	constant := vm.constants[constIndex]
-	function, ok := constant.(*object.CompiledFunction)
-	if !ok {
-		return fmt.Errorf("not a function: %+v", constant)
-	}
+	function := constant.(*object.CompiledFunction)
 
 	free := make([]object.Object, numFree)
 	for i := 0; i < numFree; i++ {
