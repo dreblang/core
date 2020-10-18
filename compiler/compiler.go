@@ -604,7 +604,12 @@ func (c *Compiler) loadModule(m string) {
 	}
 
 	scope := sym.(func() *object.Scope)()
-	fmt.Println(scope)
+	si := c.addConstant(scope)
+
+	c.emit(code.OpConstant, si)
+	ssym := c.symbolTable.Define(m)
+	c.saveSymbol(ssym)
+	c.emit(code.OpPop)
 }
 
 func (c *Compiler) loadSymbol(s Symbol) {

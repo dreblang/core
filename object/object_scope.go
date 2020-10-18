@@ -16,7 +16,7 @@ type Scope struct {
 
 func (cf *Scope) Type() ObjectType { return ScopeObj }
 func (cf *Scope) Inspect() string {
-	return fmt.Sprintf("Scope[%p]", cf)
+	return fmt.Sprintf("Scope[%s]", cf.Name)
 }
 func (cf *Scope) String() string { return "scope" }
 
