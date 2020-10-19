@@ -31,6 +31,12 @@ type VM struct {
 	curFrame *Frame
 }
 
+var currentVM *VM
+
+func GetCurrentVM() *VM {
+	return currentVM
+}
+
 func New(bytecode *compiler.Bytecode) *VM {
 	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
 	mainClosure := &object.Closure{Fn: mainFn, Exports: map[string]object.Object{}}
@@ -60,6 +66,8 @@ func (vm *VM) Run() error {
 	var ip int
 	var ins code.Instructions
 	var op code.Opcode
+
+	currentVM = vm
 
 	for vm.curFrame.ip < len(vm.curFrame.instructions)-1 {
 		var err error
