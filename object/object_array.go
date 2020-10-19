@@ -39,6 +39,14 @@ func (obj *Array) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Array) Native() interface{} {
+	result := make([]interface{}, len(obj.Elements))
+	for i := range obj.Elements {
+		result[i] = obj.Elements[i].Native()
+	}
+	return result
+}
+
 func (obj *Array) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:

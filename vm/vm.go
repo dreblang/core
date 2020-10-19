@@ -618,6 +618,31 @@ func (vm *VM) pushClosure(constIndex, numFree int) error {
 	return vm.push(closure)
 }
 
+func (vm *VM) ExecClosure(closure *object.Closure, args ...object.Object) object.Object {
+	nvm := NewWithGlobalsStore(
+		&compiler.Bytecode{
+			Instructions: code.Instructions{},
+			Constants:    vm.constants,
+		},
+		vm.globals,
+	)
+	nvm.push(Null)
+	for _, arg := range args {
+		nvm.push(arg)
+	}
+	err := nvm.callClosure(closure, len(args))
+
+	if err != nil {
+		return object.NewError("Error calling closure: %s", err)
+	}
+
+	nvm.Run()
+	if nvm.sp >= 0 {
+		return nvm.stack[nvm.sp-1]
+	}
+	return Null
+}
+
 func isTruthy(obj object.Object) bool {
 	switch obj := obj.(type) {
 	case *object.Boolean:

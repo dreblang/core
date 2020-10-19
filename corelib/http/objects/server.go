@@ -43,6 +43,10 @@ func (obj *Server) GetMember(name string) object.Object {
 	return object.NewError("No member named [%s]", name)
 }
 
+func (obj *Server) Native() interface{} {
+	return obj.router
+}
+
 func (obj *Server) InfixOperation(operator string, other object.Object) object.Object {
 	return object.NewError("%s: %s %s %s", "unknownOperatorError", obj.Type(), operator, other.Type())
 }
@@ -67,11 +71,9 @@ func get(thisObj object.Object, args ...object.Object) object.Object {
 	path := args[0].(*object.String)
 	handler := args[1]
 	currentVM := vm.GetCurrentVM()
-	this.router.Get(path.Value, func(c *routing.Context) error {
-		fmt.Println("I got inside a handler")
-		fmt.Println(handler)
-
-		currentVM.ExecClosure(handler, nil, nil)
+	this.router.Get(path.Value, func(ctx *routing.Context) error {
+		currentVM.ExecClosure(handler.(*object.Closure), object.True, object.False)
+		ctx.Write([]byte("hello world!"))
 		return nil
 	})
 	return object.NullObject

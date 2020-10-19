@@ -24,6 +24,7 @@ type Object interface {
 	Inspect() string
 	String() string
 	GetMember(name string) Object
+	Native() interface{}
 
 	InfixOperation(operator string, other Object) Object
 }

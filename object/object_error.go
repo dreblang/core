@@ -1,5 +1,7 @@
 package object
 
+import "errors"
+
 type Error struct {
 	Message string
 }
@@ -14,4 +16,8 @@ func (obj *Error) GetMember(name string) Object {
 
 func (obj *Error) InfixOperation(operator string, other Object) Object {
 	return newError("Unsupported operation [%s]", operator)
+}
+
+func (obj *Error) Native() interface{} {
+	return errors.New(obj.Message)
 }

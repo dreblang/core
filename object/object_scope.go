@@ -27,6 +27,10 @@ func (obj *Scope) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Scope) Native() interface{} {
+	return nil
+}
+
 func (obj *Scope) InfixOperation(operator string, other Object) Object {
 	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }

@@ -14,6 +14,10 @@ func (obj *Null) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Null) Native() interface{} {
+	return nil
+}
+
 func (obj *Null) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Equal:

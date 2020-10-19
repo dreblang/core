@@ -50,6 +50,10 @@ func (obj *String) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *String) Native() interface{} {
+	return obj.Value
+}
+
 func (obj *String) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:

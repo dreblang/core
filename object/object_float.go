@@ -21,6 +21,10 @@ func (obj *Float) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Float) Native() interface{} {
+	return obj.Value
+}
+
 func (obj *Float) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:
