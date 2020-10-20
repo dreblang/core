@@ -72,8 +72,13 @@ func get(thisObj object.Object, args ...object.Object) object.Object {
 	handler := args[1]
 	currentVM := vm.GetCurrentVM()
 	this.router.Get(path.Value, func(ctx *routing.Context) error {
-		currentVM.ExecClosure(handler.(*object.Closure), object.True, object.False)
-		ctx.Write([]byte("hello world!"))
+		res := currentVM.ExecClosure(handler.(*object.Closure), object.True, object.False)
+
+		switch resp := res.(type) {
+		case *object.String:
+			_, err := ctx.WriteString(resp.Value)
+			return err
+		}
 		return nil
 	})
 	return object.NullObject

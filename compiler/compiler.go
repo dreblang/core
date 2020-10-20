@@ -591,19 +591,27 @@ func (c *Compiler) replaceLastPopWithReturn() {
 }
 
 func (c *Compiler) loadModule(m string) {
-	// TODO: Look for module in search paths
-	plg, err := plugin.Open(m + ".so")
-	if err != nil {
-		fmt.Println("Plugin error: ", err)
-		return
+	var scope *object.Scope
+	if loader, ok := coreModules[m]; ok {
+		scope = loader()
+	} else {
+		// TODO: Look for module in search paths
+		plg, err := plugin.Open(m + ".so")
+		if err != nil {
+			fmt.Println("Plugin error: ", err)
+			return
+		}
+		sym, err := plg.Lookup("Load")
+		if err != nil {
+			fmt.Println("Lookup error: ", err)
+			return
+		}
+		scope = sym.(func() *object.Scope)()
 	}
-	sym, err := plg.Lookup("Load")
-	if err != nil {
-		fmt.Println("Lookup error: ", err)
+	if scope == nil {
 		return
 	}
 
-	scope := sym.(func() *object.Scope)()
 	si := c.addConstant(scope)
 
 	c.emit(code.OpConstant, si)
