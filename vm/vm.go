@@ -294,12 +294,16 @@ func (vm *VM) executeBinaryOperation(op string) error {
 	right := vm.pop()
 	left := vm.pop()
 
-	result := left.InfixOperation(op, right)
-	if result.Type() != object.ErrorObj {
-		vm.push(result)
-		return nil
+	if leftOp, ok := left.(object.InfixOperatorObject); ok {
+		result := leftOp.InfixOperation(op, right)
+		if result.Type() != object.ErrorObj {
+			vm.push(result)
+			return nil
+		} else {
+			return fmt.Errorf(result.(*object.Error).Message)
+		}
 	} else {
-		return fmt.Errorf(result.(*object.Error).Message)
+		return fmt.Errorf("%s: %s %s %s", "unknown eval operator", left.Type(), op, right.Type())
 	}
 }
 
@@ -316,12 +320,16 @@ func (vm *VM) executeComparison(op string) error {
 	right := vm.pop()
 	left := vm.pop()
 
-	result := left.InfixOperation(op, right)
-	if result.Type() != object.ErrorObj {
-		vm.push(result)
-		return nil
+	if leftOp, ok := left.(object.InfixOperatorObject); ok {
+		result := leftOp.InfixOperation(op, right)
+		if result.Type() != object.ErrorObj {
+			vm.push(result)
+			return nil
+		} else {
+			return fmt.Errorf(result.(*object.Error).Message)
+		}
 	} else {
-		return fmt.Errorf(result.(*object.Error).Message)
+		return fmt.Errorf("%s: %s %s %s", "unknownOperatorError", left.Type(), op, right.Type())
 	}
 }
 

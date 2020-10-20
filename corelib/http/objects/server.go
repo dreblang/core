@@ -43,14 +43,6 @@ func (obj *Server) GetMember(name string) object.Object {
 	return object.NewError("No member named [%s]", name)
 }
 
-func (obj *Server) Native() interface{} {
-	return obj.router
-}
-
-func (obj *Server) InfixOperation(operator string, other object.Object) object.Object {
-	return object.NewError("%s: %s %s %s", "unknownOperatorError", obj.Type(), operator, other.Type())
-}
-
 func listenAndServe(thisObj object.Object, args ...object.Object) object.Object {
 	var err error
 	this := thisObj.(*Server)

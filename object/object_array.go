@@ -42,7 +42,7 @@ func (obj *Array) GetMember(name string) Object {
 func (obj *Array) Native() interface{} {
 	result := make([]interface{}, len(obj.Elements))
 	for i := range obj.Elements {
-		result[i] = obj.Elements[i].Native()
+		result[i] = obj.Elements[i].(NativeObject).Native()
 	}
 	return result
 }

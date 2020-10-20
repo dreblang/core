@@ -55,10 +55,7 @@ func (obj *Hash) GetMember(name string) Object {
 func (obj *Hash) Native() interface{} {
 	result := map[interface{}]interface{}{}
 	for _, v := range obj.Pairs {
-		result[v.Key.Native()] = v.Value.Native()
+		result[v.Key.(NativeObject).Native()] = v.Value.(NativeObject).Native()
 	}
 	return result
-}
-func (obj *Hash) InfixOperation(operator string, other Object) Object {
-	return newError("%s: %s %s %s", unknownOperatorError, obj.Type(), operator, other.Type())
 }
