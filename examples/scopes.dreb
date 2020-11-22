@@ -11,7 +11,7 @@ scope test {
   export fun
 }
 
-puts(test::fun())
-puts(test::fun())
+print(test::fun())
+print(test::fun())
 
-puts(math::sqr(math::pi))
+print(math::sqr(math::pi))

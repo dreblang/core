@@ -39,6 +39,21 @@ func (obj *Server) GetMember(name string) object.Object {
 			Obj: obj,
 			Fn:  get,
 		}
+	case "post":
+		return &object.MemberFn{
+			Obj: obj,
+			Fn:  post,
+		}
+	case "put":
+		return &object.MemberFn{
+			Obj: obj,
+			Fn:  put,
+		}
+	case "delete":
+		return &object.MemberFn{
+			Obj: obj,
+			Fn:  delete,
+		}
 	}
 	return object.NewError("No member named [%s]", name)
 }
@@ -51,6 +66,7 @@ func listenAndServe(thisObj object.Object, args ...object.Object) object.Object 
 			err = fasthttp.ListenAndServe(addr.Value, this.router.HandleRequest)
 		}
 	}
+
 	err = fasthttp.ListenAndServe(":8000", this.router.HandleRequest)
 	if err != nil {
 		return object.NewError("http:Server error: %s", err)
@@ -62,9 +78,38 @@ func get(thisObj object.Object, args ...object.Object) object.Object {
 	this := thisObj.(*Server)
 	path := args[0].(*object.String)
 	handler := args[1]
-	currentVM := vm.GetCurrentVM()
-	this.router.Get(path.Value, func(ctx *routing.Context) error {
-		res := currentVM.ExecClosure(handler.(*object.Closure), object.True, object.False)
+	this.router.Get(path.Value, getHTTPHandler(handler.(*object.Closure)))
+	return object.NullObject
+}
+
+func post(thisObj object.Object, args ...object.Object) object.Object {
+	this := thisObj.(*Server)
+	path := args[0].(*object.String)
+	handler := args[1]
+	this.router.Post(path.Value, getHTTPHandler(handler.(*object.Closure)))
+	return object.NullObject
+}
+
+func put(thisObj object.Object, args ...object.Object) object.Object {
+	this := thisObj.(*Server)
+	path := args[0].(*object.String)
+	handler := args[1]
+	this.router.Put(path.Value, getHTTPHandler(handler.(*object.Closure)))
+	return object.NullObject
+}
+
+func delete(thisObj object.Object, args ...object.Object) object.Object {
+	this := thisObj.(*Server)
+	path := args[0].(*object.String)
+	handler := args[1]
+	this.router.Delete(path.Value, getHTTPHandler(handler.(*object.Closure)))
+	return object.NullObject
+}
+
+func getHTTPHandler(handler *object.Closure) func(ctx *routing.Context) error {
+	return func(ctx *routing.Context) error {
+		currentVM := vm.GetCurrentVM()
+		res := currentVM.ExecClosure(handler, object.True, object.False)
 
 		switch resp := res.(type) {
 		case *object.String:
@@ -72,6 +117,5 @@ func get(thisObj object.Object, args ...object.Object) object.Object {
 			return err
 		}
 		return nil
-	})
-	return object.NullObject
+	}
 }

@@ -1,8 +1,9 @@
 load http
 
 server = http.createServer()
+
 server.get('/hello', fn (req, res) {
-  return 'hello world from dreb'
+  return 'hello world from dreblang!'
 })
 
 server.listenAndServe(':9500')
