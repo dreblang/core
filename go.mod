@@ -1,6 +1,6 @@
 module github.com/dreblang/core
 
-go 1.14
+go 1.15
 
 require (
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
