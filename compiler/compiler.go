@@ -148,6 +148,13 @@ func (c *Compiler) Compile(node ast.Node) error {
 				}
 				c.emit(code.OpConstant, c.addConstant(object.NativeBoolToBooleanObject(leftNode.HasSkip)))
 				c.emit(code.OpIndexSet)
+
+			case *ast.InfixExpression:
+				if leftNode.Operator == "." {
+					c.emit(code.OpConstant, c.addConstant(&object.String{Value: leftNode.Right.String()}))
+					c.Compile(leftNode.Left)
+					c.emit(code.OpMemberSet)
+				}
 			}
 
 			return nil

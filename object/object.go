@@ -23,7 +23,9 @@ type Object interface {
 	Type() ObjectType
 	Inspect() string
 	String() string
+
 	GetMember(name string) Object
+	SetMember(name string, value Object) Object
 }
 
 type NativeObject interface {

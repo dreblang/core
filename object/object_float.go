@@ -20,6 +20,9 @@ func (i *Float) HashKey() HashKey {
 func (obj *Float) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+func (obj *Float) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
 
 func (obj *Float) Native() interface{} {
 	return obj.Value

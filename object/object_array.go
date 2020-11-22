@@ -39,6 +39,10 @@ func (obj *Array) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Array) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
+
 func (obj *Array) Native() interface{} {
 	result := make([]interface{}, len(obj.Elements))
 	for i := range obj.Elements {

@@ -1,0 +1,13 @@
+a = {
+  hello: "hello",
+  world: "world",
+}
+
+print(a)
+print(a.hello)
+
+a['key'] = 'value'
+print(a.key)
+
+a.value = 'key'
+print(a.value)

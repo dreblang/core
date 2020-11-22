@@ -98,6 +98,8 @@ func (vm *VM) Run() error {
 			err = vm.executeBinaryOperation("%")
 		case code.OpMember:
 			err = vm.executeMemberOperation(op)
+		case code.OpMemberSet:
+			err = vm.executeMemberSetOperation(op)
 		case code.OpTrue:
 			err = vm.push(True)
 		case code.OpFalse:
@@ -314,6 +316,20 @@ func (vm *VM) executeMemberOperation(op code.Opcode) error {
 	result := left.GetMember(right.String())
 	vm.push(result)
 	return nil
+}
+
+func (vm *VM) executeMemberSetOperation(op code.Opcode) error {
+	left := vm.pop()
+	member := vm.pop()
+	right := vm.pop()
+
+	result := left.SetMember(member.String(), right)
+	if result.Type() != object.ErrorObj {
+		vm.push(result)
+		return nil
+	}
+
+	return fmt.Errorf(result.(*object.Error).Message)
 }
 
 func (vm *VM) executeComparison(op string) error {

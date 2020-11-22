@@ -13,6 +13,9 @@ var NullObject = &Null{}
 func (obj *Null) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+func (obj *Null) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
 
 func (obj *Null) Native() interface{} {
 	return nil

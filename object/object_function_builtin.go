@@ -13,3 +13,6 @@ func (b *Builtin) String() string   { return "builtin" }
 func (obj *Builtin) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+func (obj *Builtin) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}

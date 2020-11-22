@@ -20,7 +20,9 @@ func (i *Integer) String() string { return fmt.Sprintf("%d", i.Value) }
 func (obj *Integer) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
-
+func (obj *Integer) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
 func (obj *Integer) Native() interface{} {
 	return obj.Value
 }

@@ -48,6 +48,7 @@ var definitions = map[Opcode]*Definition{
 	OpGetFree:        {"OpGetFree", []int{1}},
 	OpSetFree:        {"OpSetFree", []int{1}},
 	OpMember:         {"OpMember", []int{}},
+	OpMemberSet:      {"OpMemberSet", []int{}},
 	OpExport:         {"OpExport", []int{}},
 	OpScope:          {"OpScope", []int{}},
 	OpScopeResolve:   {"OpScopeResolve", []int{}},

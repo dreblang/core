@@ -57,6 +57,9 @@ func (obj *Server) GetMember(name string) object.Object {
 	}
 	return object.NewError("No member named [%s]", name)
 }
+func (obj *Server) SetMember(name string, value object.Object) object.Object {
+	return object.NewError("No member named [%s]", name)
+}
 
 func listenAndServe(thisObj object.Object, args ...object.Object) object.Object {
 	var err error

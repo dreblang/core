@@ -55,6 +55,14 @@ func (obj *Hash) GetMember(name string) Object {
 
 	return newError("No member named [%s]", name)
 }
+func (obj *Hash) SetMember(name string, value Object) Object {
+	key := &String{Value: name}
+	obj.Pairs[key.HashKey()] = HashPair{
+		Key:   key,
+		Value: value,
+	}
+	return value
+}
 
 func (obj *Hash) Native() interface{} {
 	result := map[interface{}]interface{}{}
