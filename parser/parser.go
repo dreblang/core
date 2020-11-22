@@ -485,6 +485,12 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 		p.nextToken()
 		key := p.parseExpression(Lowest)
 
+		if _, ok := key.(*ast.Identifier); ok {
+			key = &ast.StringLiteral{
+				Value: key.String(),
+			}
+		}
+
 		if !p.expectPeek(token.Colon) {
 			return nil
 		}

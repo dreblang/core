@@ -49,6 +49,10 @@ func (obj *Hash) GetMember(name string) Object {
 		return &Integer{Value: int64(len(obj.Pairs))}
 	}
 
+	if val, ok := obj.Pairs[(&String{Value: name}).HashKey()]; ok {
+		return val.Value
+	}
+
 	return newError("No member named [%s]", name)
 }
 
