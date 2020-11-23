@@ -3,11 +3,11 @@ a = {
   world: "world",
 }
 
-print(a)
-print(a.hello)
+print('a = ', a)
+print('a.hello = ', a.hello)
 
 a['key'] = 'value'
-print(a.key)
+print('a.key = ', a.key)
 
 a.value = 'key'
-print(a.value)
+print('a.value = ', a.value)
