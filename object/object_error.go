@@ -14,6 +14,10 @@ func (obj *Error) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Error) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
+
 func (obj *Error) Native() interface{} {
 	return errors.New(obj.Message)
 }

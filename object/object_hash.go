@@ -49,7 +49,19 @@ func (obj *Hash) GetMember(name string) Object {
 		return &Integer{Value: int64(len(obj.Pairs))}
 	}
 
+	if val, ok := obj.Pairs[(&String{Value: name}).HashKey()]; ok {
+		return val.Value
+	}
+
 	return newError("No member named [%s]", name)
+}
+func (obj *Hash) SetMember(name string, value Object) Object {
+	key := &String{Value: name}
+	obj.Pairs[key.HashKey()] = HashPair{
+		Key:   key,
+		Value: value,
+	}
+	return value
 }
 
 func (obj *Hash) Native() interface{} {

@@ -26,6 +26,9 @@ func (obj *Scope) GetMember(name string) Object {
 	}
 	return newError("No member named [%s]", name)
 }
+func (obj *Scope) SetMember(name string, value Object) Object {
+	return newError("No member named [%s]", name)
+}
 
 func (obj *Scope) Native() interface{} {
 	return nil

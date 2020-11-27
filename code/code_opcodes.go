@@ -49,6 +49,7 @@ const (
 	OpGetBuiltin
 	OpClosure
 	OpMember
+	OpMemberSet
 
 	OpExport
 	OpScope
