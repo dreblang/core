@@ -1,0 +1,15 @@
+a = "hello world"
+print(a)
+
+print("\t hello".strip())
+print("hello world and all".split())
+print("hello world,and all".split(','))
+print("hello".upper())
+print("HELLO".lower())
+print("hello world".sub(6))
+print("hello world".sub(0, 4))
+print("hello world".replace('hell', 'heaven'))
+print("hello world".length)
+print("hello world".starts_with('hell'))
+print("hello world".ends_with('rld'))
+print("hello".starts_with("hello world"))

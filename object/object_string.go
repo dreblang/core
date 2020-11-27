@@ -45,6 +45,30 @@ func (obj *String) GetMember(name string) Object {
 			Obj: obj,
 			Fn:  stringReplace,
 		}
+
+	case "strip":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  stringStrip,
+		}
+
+	case "split":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  stringSplit,
+		}
+
+	case "starts_with":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  stringStartsWith,
+		}
+
+	case "ends_with":
+		return &MemberFn{
+			Obj: obj,
+			Fn:  stringEndsWith,
+		}
 	}
 
 	return newError("No member named [%s]", name)
@@ -168,4 +192,71 @@ func stringReplace(this Object, args ...Object) Object {
 		}
 	}
 	return newError("Could not execute string replace operation. Invalid arguments!")
+}
+
+func stringStrip(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 0:
+		return &String{
+			Value: strings.Trim(str.Value, " \t\n"),
+		}
+	}
+	return newError("Invalid arguments!")
+}
+
+func stringSplit(this Object, args ...Object) Object {
+	str := this.(*String)
+	var values []string
+	switch len(args) {
+	case 0:
+		values = strings.Split(str.Value, " ")
+	case 1:
+		values = strings.Split(str.Value, args[0].(*String).Value)
+	default:
+		return newError("Invalid arguments!")
+	}
+
+	valueObjs := make([]Object, len(values))
+	for i, v := range values {
+		valueObjs[i] = &String{Value: v}
+	}
+
+	return &Array{
+		Elements: valueObjs,
+	}
+}
+
+func stringStartsWith(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 1:
+		other := args[0].(*String)
+		if len(other.Value) > len(str.Value) {
+			return False
+		}
+
+		return NativeBoolToBooleanObject(
+			str.Value[:len(other.Value)] == other.Value,
+		)
+	}
+
+	return newError("Invalid arguments!")
+}
+
+func stringEndsWith(this Object, args ...Object) Object {
+	str := this.(*String)
+	switch len(args) {
+	case 1:
+		other := args[0].(*String)
+		if len(other.Value) > len(str.Value) {
+			return False
+		}
+
+		return NativeBoolToBooleanObject(
+			str.Value[len(str.Value)-len(other.Value):] == other.Value,
+		)
+	}
+
+	return newError("Invalid arguments!")
 }
