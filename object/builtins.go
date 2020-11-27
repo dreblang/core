@@ -13,6 +13,7 @@ const (
 	BuiltinFuncNameInt    = "int"
 	BuiltinFuncNameFloat  = "float"
 	BuiltinFuncNameString = "string"
+	BuiltinFuncNameBytes  = "bytes"
 )
 
 var Builtins = []struct {
@@ -109,6 +110,21 @@ var Builtins = []struct {
 					len(args))
 			}
 			return &String{Value: args[0].String()}
+		},
+		},
+	},
+	{
+		BuiltinFuncNameBytes,
+		&Builtin{Fn: func(args ...Object) Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			switch val := args[0].(type) {
+			case *String:
+				return &Bytes{Value: []byte(val.Value)}
+			}
+			return newError("couldn't convert to bytes!")
 		},
 		},
 	},

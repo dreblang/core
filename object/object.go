@@ -10,6 +10,7 @@ const (
 	ReturnValueObj      = "ReturnValue"
 	ErrorObj            = "Error"
 	FunctionObj         = "Function"
+	BytesObj            = "Bytes"
 	StringObj           = "String"
 	BuiltinObj          = "Builtin"
 	ArrayObj            = "Array"

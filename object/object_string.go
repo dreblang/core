@@ -94,7 +94,7 @@ func (obj *String) InfixOperation(operator string, other Object) Object {
 	case token.LessThan:
 		switch val := other.(type) {
 		case *String:
-			return NativeBoolToBooleanObject(obj.Value <= val.Value)
+			return NativeBoolToBooleanObject(obj.Value < val.Value)
 		}
 
 	case token.LessOrEqual:
