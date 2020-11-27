@@ -109,8 +109,16 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 	for p.currentToken.Type != token.EOF {
 		stmt := p.parseStatement()
+
 		if stmt != nil {
-			program.Statements = append(program.Statements, stmt)
+			switch stmtT := stmt.(type) {
+			case *ast.IterStatement:
+				stmts := stmtT.ConvertToLoop()
+				program.Statements = append(program.Statements, stmts...)
+
+			default:
+				program.Statements = append(program.Statements, stmtT)
+			}
 		}
 		p.nextToken()
 	}
@@ -136,6 +144,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseExportStatement()
 	case token.Load:
 		return p.parseLoadStatement()
+	case token.Iter:
+		return p.parseIterStatement()
 	}
 	return p.parseExpressionStatement()
 }
@@ -231,6 +241,27 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseIterStatement() *ast.IterStatement {
+	stmt := ast.IterStatement{Token: p.currentToken}
+	p.nextToken()
+
+	stmt.Identifier = p.parseIdentifier().(*ast.Identifier)
+
+	if p.peekTokenIs(token.Over) {
+		p.nextToken()
+		p.nextToken()
+	}
+
+	stmt.Expression = p.parseExpression(Lowest)
+
+	if p.peekTokenIs(token.LeftBrace) {
+		p.nextToken()
+	}
+
+	stmt.Statements = p.parseBlockStatement()
+	return &stmt
 }
 
 // Expressions

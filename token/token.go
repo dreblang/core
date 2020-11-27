@@ -59,6 +59,8 @@ const (
 	Scope    = "Scope"
 	Export   = "Export"
 	Load     = "Load"
+	Iter     = "Iter"
+	Over     = "Over"
 )
 
 var keywords = map[string]TokenType{
@@ -73,6 +75,8 @@ var keywords = map[string]TokenType{
 	"scope":  Scope,
 	"export": Export,
 	"load":   Load,
+	"iter":   Iter,
+	"over":   Over,
 }
 
 func LookupIdentifierType(identifier string) TokenType {
