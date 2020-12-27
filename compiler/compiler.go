@@ -497,6 +497,11 @@ func (c *Compiler) Bytecode() *Bytecode {
 }
 
 func (c *Compiler) addConstant(obj object.Object) int {
+	for idx, v := range c.constants {
+		if obj.Equals(v) {
+			return idx
+		}
+	}
 	c.constants = append(c.constants, obj)
 	return len(c.constants) - 1
 }
