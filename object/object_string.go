@@ -73,12 +73,20 @@ func (obj *String) GetMember(name string) Object {
 
 	return newError("No member named [%s]", name)
 }
+
 func (obj *String) SetMember(name string, value Object) Object {
 	return newError("No member named [%s]", name)
 }
 
 func (obj *String) Native() interface{} {
 	return obj.Value
+}
+
+func (obj *String) Equals(other Object) bool {
+	if otherObj, ok := other.(*String); ok {
+		return obj.Value == otherObj.Value
+	}
+	return false
 }
 
 func (obj *String) InfixOperation(operator string, other Object) Object {

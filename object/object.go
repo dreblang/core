@@ -27,6 +27,8 @@ type Object interface {
 
 	GetMember(name string) Object
 	SetMember(name string, value Object) Object
+
+	Equals(other Object) bool
 }
 
 type NativeObject interface {

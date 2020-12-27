@@ -38,6 +38,13 @@ func (obj *Boolean) SetMember(name string, value Object) Object {
 	return newError("No member named [%s]", name)
 }
 
+func (obj *Boolean) Equals(other Object) bool {
+	if otherObj, ok := other.(*Boolean); ok {
+		return obj.Value == otherObj.Value
+	}
+	return false
+}
+
 func (obj *Boolean) Native() interface{} {
 	return obj.Value
 }

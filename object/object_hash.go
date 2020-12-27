@@ -55,6 +55,7 @@ func (obj *Hash) GetMember(name string) Object {
 
 	return newError("No member named [%s]", name)
 }
+
 func (obj *Hash) SetMember(name string, value Object) Object {
 	key := &String{Value: name}
 	obj.Pairs[key.HashKey()] = HashPair{
@@ -62,6 +63,14 @@ func (obj *Hash) SetMember(name string, value Object) Object {
 		Value: value,
 	}
 	return value
+}
+
+func (obj *Hash) Equals(other Object) bool {
+	// if otherObj, ok := other.(*Hash); ok {
+	// 	otherObj.Pairs
+	// }
+	// FIXME: Compare hash
+	return false
 }
 
 func (obj *Hash) Native() interface{} {

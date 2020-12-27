@@ -21,3 +21,10 @@ func (obj *Error) SetMember(name string, value Object) Object {
 func (obj *Error) Native() interface{} {
 	return errors.New(obj.Message)
 }
+
+func (obj *Error) Equals(other Object) bool {
+	if otherObj, ok := other.(*Error); ok {
+		return obj.Message == otherObj.Message
+	}
+	return false
+}

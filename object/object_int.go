@@ -20,11 +20,24 @@ func (i *Integer) String() string { return fmt.Sprintf("%d", i.Value) }
 func (obj *Integer) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
 func (obj *Integer) SetMember(name string, value Object) Object {
 	return newError("No member named [%s]", name)
 }
+
 func (obj *Integer) Native() interface{} {
 	return obj.Value
+}
+
+func (obj *Integer) Equals(other Object) bool {
+	if otherObj, ok := other.(*Integer); ok {
+		return obj.Value == otherObj.Value
+	}
+
+	if otherObj, ok := other.(*Float); ok {
+		return float64(obj.Value) == otherObj.Value
+	}
+	return false
 }
 
 func (obj *Integer) InfixOperation(operator string, other Object) Object {

@@ -41,12 +41,20 @@ func (obj *Bytes) GetMember(name string) Object {
 
 	return newError("No member named [%s]", name)
 }
+
 func (obj *Bytes) SetMember(name string, value Object) Object {
 	return newError("No member named [%s]", name)
 }
 
 func (obj *Bytes) Native() interface{} {
 	return obj.Value
+}
+
+func (obj *Bytes) Equals(other Object) bool {
+	if otherObj, ok := other.(*Bytes); ok {
+		return bytes.Compare(obj.Value, otherObj.Value) == 0
+	}
+	return false
 }
 
 func (obj *Bytes) InfixOperation(operator string, other Object) Object {

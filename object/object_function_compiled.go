@@ -21,6 +21,11 @@ func (cf *CompiledFunction) String() string { return "cfunc" }
 func (obj *CompiledFunction) GetMember(name string) Object {
 	return newError("No member named [%s]", name)
 }
+
 func (obj *CompiledFunction) SetMember(name string, value Object) Object {
 	return newError("No member named [%s]", name)
+}
+
+func (obj *CompiledFunction) Equals(other Object) bool {
+	return false
 }

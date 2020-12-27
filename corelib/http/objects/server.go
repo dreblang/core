@@ -25,6 +25,7 @@ func (obj *Server) Type() object.ObjectType { return ServerObj }
 func (obj *Server) Inspect() string {
 	return fmt.Sprintf("http:Server[%p]", obj)
 }
+
 func (obj *Server) String() string { return "Server" }
 
 func (obj *Server) GetMember(name string) object.Object {
@@ -57,8 +58,13 @@ func (obj *Server) GetMember(name string) object.Object {
 	}
 	return object.NewError("No member named [%s]", name)
 }
+
 func (obj *Server) SetMember(name string, value object.Object) object.Object {
 	return object.NewError("No member named [%s]", name)
+}
+
+func (obj *Server) Equals(other object.Object) bool {
+	return false
 }
 
 func listenAndServe(thisObj object.Object, args ...object.Object) object.Object {

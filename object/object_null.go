@@ -21,6 +21,13 @@ func (obj *Null) Native() interface{} {
 	return nil
 }
 
+func (obj *Null) Equals(other Object) bool {
+	if _, ok := other.(*Null); ok {
+		return true
+	}
+	return false
+}
+
 func (obj *Null) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Equal:

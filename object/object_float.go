@@ -28,6 +28,18 @@ func (obj *Float) Native() interface{} {
 	return obj.Value
 }
 
+func (obj *Float) Equals(other Object) bool {
+	if otherObj, ok := other.(*Float); ok {
+		return obj.Value == otherObj.Value
+	}
+
+	if otherObj, ok := other.(*Integer); ok {
+		return obj.Value == float64(otherObj.Value)
+	}
+
+	return false
+}
+
 func (obj *Float) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:

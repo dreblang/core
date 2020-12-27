@@ -51,6 +51,22 @@ func (obj *Array) Native() interface{} {
 	return result
 }
 
+func (obj *Array) Equals(other Object) bool {
+	if otherObj, ok := other.(*Array); ok {
+		if len(otherObj.Elements) != len(obj.Elements) {
+			return false
+		}
+
+		for idx := range obj.Elements {
+			if !obj.Elements[idx].Equals(otherObj.Elements[idx]) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func (obj *Array) InfixOperation(operator string, other Object) Object {
 	switch operator {
 	case token.Plus:
