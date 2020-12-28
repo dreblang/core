@@ -70,13 +70,20 @@ func (obj *Server) Equals(other object.Object) bool {
 func listenAndServe(thisObj object.Object, args ...object.Object) object.Object {
 	var err error
 	this := thisObj.(*Server)
+
+	server := &fasthttp.Server{
+		Handler:      this.router.HandleRequest,
+		LogAllErrors: true,
+	}
+
 	if len(args) == 1 {
 		if addr, ok := args[0].(*object.String); ok {
-			err = fasthttp.ListenAndServe(addr.Value, this.router.HandleRequest)
+			err = server.ListenAndServe(addr.Value)
+			return object.NullObject
 		}
 	}
 
-	err = fasthttp.ListenAndServe(":8000", this.router.HandleRequest)
+	err = server.ListenAndServe(":8000")
 	if err != nil {
 		return object.NewError("http:Server error: %s", err)
 	}
