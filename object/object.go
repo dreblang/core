@@ -18,6 +18,7 @@ const (
 	CompiledFunctionObj = "CompiledFunction"
 	ClosureObj          = "Closure"
 	ScopeObj            = "Scope"
+	ClassObj            = "Class"
 )
 
 type Object interface {

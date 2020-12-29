@@ -1,5 +1,7 @@
 package compiler
 
+import "github.com/dreblang/core/object"
+
 type SymbolScope string
 
 const (
@@ -27,7 +29,13 @@ type SymbolTable struct {
 func NewSymbolTable() *SymbolTable {
 	s := make(map[string]Symbol)
 	free := []Symbol{}
-	return &SymbolTable{store: s, FreeSymbols: free}
+	st := &SymbolTable{store: s, FreeSymbols: free}
+
+	for i, v := range object.Builtins {
+		st.DefineBuiltin(i, v.Name)
+	}
+
+	return st
 }
 
 func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {

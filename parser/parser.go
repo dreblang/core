@@ -116,6 +116,10 @@ func (p *Parser) ParseProgram() *ast.Program {
 				stmts := stmtT.ConvertToLoop()
 				program.Statements = append(program.Statements, stmts...)
 
+			case *ast.ClassDefinition:
+				stmts := stmtT.ConvertToFunc()
+				program.Statements = append(program.Statements, stmts...)
+
 			default:
 				program.Statements = append(program.Statements, stmtT)
 			}
@@ -140,6 +144,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.Scope:
 		return p.parseScopeDefinition()
+	case token.Class:
+		return p.parseClassDefinition()
 	case token.Export:
 		return p.parseExportStatement()
 	case token.Load:
@@ -189,6 +195,22 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 func (p *Parser) parseScopeDefinition() *ast.ScopeDefinition {
 	sd := &ast.ScopeDefinition{Token: p.currentToken}
+
+	if !p.expectPeek(token.Identifier) {
+		return nil
+	}
+
+	sd.Name = &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+
+	if !p.expectPeek(token.LeftBrace) {
+		return nil
+	}
+	sd.Block = p.parseBlockStatement()
+	return sd
+}
+
+func (p *Parser) parseClassDefinition() *ast.ClassDefinition {
+	sd := &ast.ClassDefinition{Token: p.currentToken}
 
 	if !p.expectPeek(token.Identifier) {
 		return nil

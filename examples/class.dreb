@@ -1,0 +1,19 @@
+class MyObject {
+  a = 100
+
+  get = fn () {
+    a = a + 1
+    return a
+  }
+
+  export get
+}
+
+inst1 = MyObject()
+inst2 = MyObject()
+
+print(inst1.get())
+print(inst1.get())
+
+print(inst2.get())
+print(inst2.get())

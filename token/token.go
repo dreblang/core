@@ -61,6 +61,7 @@ const (
 	Load     = "Load"
 	Iter     = "Iter"
 	Over     = "Over"
+	Class    = "Class"
 )
 
 var keywords = map[string]TokenType{
@@ -77,6 +78,7 @@ var keywords = map[string]TokenType{
 	"load":   Load,
 	"iter":   Iter,
 	"over":   Over,
+	"class":  Class,
 }
 
 func LookupIdentifierType(identifier string) TokenType {

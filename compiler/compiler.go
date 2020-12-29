@@ -483,7 +483,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.loadModule(node.Identifier.Value)
 
 	default:
-		fmt.Println("Unknown ast type!")
+		fmt.Println("Unknown ast type!", node)
 	}
 
 	return nil

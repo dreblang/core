@@ -16,7 +16,7 @@ import (
 	_ "github.com/dreblang/core/corelib/math"
 )
 
-func main() {
+func Main() {
 	filename := os.Args[1]
 
 	text, _ := ioutil.ReadFile(filename)
@@ -26,9 +26,6 @@ func main() {
 	constants := []object.Object{}
 	globals := make([]object.Object, vm.GlobalSize)
 	symbolTable := compiler.NewSymbolTable()
-	for i, v := range object.Builtins {
-		symbolTable.DefineBuiltin(i, v.Name)
-	}
 
 	comp := compiler.NewWithState(symbolTable, constants)
 	err := comp.Compile(program)
@@ -41,4 +38,8 @@ func main() {
 
 	machine := vm.NewWithGlobalsStore(code, globals)
 	machine.Run()
+}
+
+func main() {
+	Main()
 }
