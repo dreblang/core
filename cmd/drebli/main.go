@@ -1,4 +1,4 @@
-package main
+package drebli
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/dreblang/core/replcompiler"
 )
 
-func main() {
+func Main() {
 	user, err := user.Current()
 	if err != nil {
 		print(err)

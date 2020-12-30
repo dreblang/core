@@ -1,4 +1,4 @@
-package main
+package dreblc
 
 import (
 	"fmt"
@@ -10,10 +10,6 @@ import (
 	"github.com/dreblang/core/object"
 	"github.com/dreblang/core/parser"
 	"github.com/dreblang/core/vm"
-
-	// Core Lib
-	_ "github.com/dreblang/core/corelib/http"
-	_ "github.com/dreblang/core/corelib/math"
 )
 
 func Main() {
@@ -38,8 +34,4 @@ func Main() {
 
 	machine := vm.NewWithGlobalsStore(code, globals)
 	machine.Run()
-}
-
-func main() {
-	Main()
 }
