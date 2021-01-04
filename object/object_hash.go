@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -11,6 +12,11 @@ import (
 type HashKey struct {
 	Type  ObjectType
 	Value string
+	Key   Object
+}
+
+func (k HashKey) MarshalJSON() (text []byte, err error) {
+	return json.Marshal(k.Key)
 }
 
 type Hashable interface {
@@ -20,6 +26,10 @@ type Hashable interface {
 type HashPair struct {
 	Key   Object
 	Value Object
+}
+
+func (p HashPair) MarshalJSON() (text []byte, err error) {
+	return json.Marshal(p.Value)
 }
 
 type Hash struct {
@@ -42,6 +52,10 @@ func (h *Hash) Inspect() string {
 	return out.String()
 }
 func (h *Hash) String() string { return "hash" }
+
+func (h *Hash) MarshalJSON() (text []byte, err error) {
+	return json.Marshal(h.Pairs)
+}
 
 func (obj *Hash) GetMember(name string) Object {
 	switch name {

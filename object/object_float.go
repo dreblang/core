@@ -19,7 +19,7 @@ func (i *Float) MarshalJSON() (text []byte, err error) {
 }
 
 func (i *Float) HashKey() HashKey {
-	return HashKey{Type: i.Type(), Value: fmt.Sprint(i.Value)}
+	return HashKey{Type: i.Type(), Value: fmt.Sprint(i.Value), Key: i}
 }
 
 func (obj *Float) GetMember(name string) Object {
