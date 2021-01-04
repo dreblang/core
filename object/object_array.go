@@ -31,7 +31,7 @@ func (ao *Array) String() string {
 	return "array"
 }
 
-func (ao *Array) MarshalText() (text []byte, err error) {
+func (ao *Array) MarshalJSON() (text []byte, err error) {
 	return json.Marshal(ao.Elements)
 }
 

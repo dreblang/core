@@ -30,7 +30,7 @@ func (b *Boolean) String() string {
 	}
 	return "false"
 }
-func (b *Boolean) MarshalText() (text []byte, err error) {
+func (b *Boolean) MarshalJSON() (text []byte, err error) {
 	return json.Marshal(b.Value)
 }
 

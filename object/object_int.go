@@ -18,7 +18,7 @@ func (i *Integer) HashKey() HashKey {
 }
 func (i *Integer) String() string { return fmt.Sprintf("%d", i.Value) }
 
-func (i *Integer) MarshalText() (text []byte, err error) {
+func (i *Integer) MarshalJSON() (text []byte, err error) {
 	return json.Marshal(i.Value)
 }
 
