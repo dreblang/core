@@ -19,6 +19,10 @@ func (k HashKey) MarshalJSON() (text []byte, err error) {
 	return json.Marshal(k.Key)
 }
 
+func (k HashKey) MarshalText() (text []byte, err error) {
+	return []byte(k.Key.String()), nil
+}
+
 type Hashable interface {
 	HashKey() HashKey
 }
