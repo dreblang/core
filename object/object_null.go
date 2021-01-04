@@ -8,6 +8,10 @@ func (n *Null) Type() ObjectType { return NullObj }
 func (n *Null) Inspect() string  { return "null" }
 func (n *Null) String() string   { return "null" }
 
+func (n *Null) MarshalText() (text []byte, err error) {
+	return []byte("null"), nil
+}
+
 var NullObject = &Null{}
 
 func (obj *Null) GetMember(name string) Object {

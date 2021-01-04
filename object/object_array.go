@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 
 	"github.com/dreblang/core/token"
@@ -28,6 +29,10 @@ func (ao *Array) Inspect() string {
 }
 func (ao *Array) String() string {
 	return "array"
+}
+
+func (ao *Array) MarshalText() (text []byte, err error) {
+	return json.Marshal(ao.Elements)
 }
 
 func (obj *Array) GetMember(name string) Object {

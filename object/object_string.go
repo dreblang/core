@@ -1,6 +1,7 @@
 package object
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/dreblang/core/token"
@@ -16,6 +17,9 @@ func (s *String) HashKey() HashKey {
 	return HashKey{Type: s.Type(), Value: s.Value}
 }
 func (s *String) String() string { return s.Value }
+func (s *String) MarshalText() (text []byte, err error) {
+	return json.Marshal(s.Value)
+}
 
 func (obj *String) GetMember(name string) Object {
 	switch name {

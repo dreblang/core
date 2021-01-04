@@ -1,6 +1,7 @@
 package object
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/dreblang/core/token"
@@ -28,6 +29,9 @@ func (b *Boolean) String() string {
 		return "true"
 	}
 	return "false"
+}
+func (b *Boolean) MarshalText() (text []byte, err error) {
+	return json.Marshal(b.Value)
 }
 
 func (obj *Boolean) GetMember(name string) Object {

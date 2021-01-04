@@ -1,6 +1,7 @@
 package object
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/dreblang/core/token"
@@ -13,6 +14,10 @@ type Float struct {
 func (i *Float) Type() ObjectType { return FloatObj }
 func (i *Float) Inspect() string  { return fmt.Sprintf("%f", i.Value) }
 func (i *Float) String() string   { return fmt.Sprintf("%g", i.Value) }
+func (i *Float) MarshalText() (text []byte, err error) {
+	return json.Marshal(i.Value)
+}
+
 func (i *Float) HashKey() HashKey {
 	return HashKey{Type: i.Type(), Value: fmt.Sprint(i.Value)}
 }
