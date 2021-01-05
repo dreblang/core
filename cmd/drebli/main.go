@@ -1,20 +1,9 @@
-package drebli
+package main
 
 import (
-	"fmt"
-	"os"
-	"os/user"
-
-	"github.com/dreblang/core/replcompiler"
+	"github.com/dreblang/core/pkg/drebli"
 )
 
-func Main() {
-	user, err := user.Current()
-	if err != nil {
-		print(err)
-	}
-
-	fmt.Printf("Hello %s! This is the Dreblang!\n", user.Username)
-	fmt.Printf("Waiting for your commands...\n")
-	replcompiler.Start(os.Stdin, os.Stdout)
+func main() {
+	drebli.Main()
 }
