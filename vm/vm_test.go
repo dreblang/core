@@ -105,6 +105,22 @@ func TestLoop(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestIter(t *testing.T) {
+	tests := []vmTestCase{
+		{"a = [0,1,2,3,4,5]; s = 0; iter i over a { s = s + i }; s", 15},
+	}
+
+	runVmTests(t, tests)
+}
+
+func TestClass(t *testing.T) {
+	tests := []vmTestCase{
+		{"class A { a = 0; get = fn() { return a + 1 }; export get; }; obj = A(); obj.get()", 1},
+	}
+
+	runVmTests(t, tests)
+}
+
 func TestGlobalLetStatements(t *testing.T) {
 	tests := []vmTestCase{
 		{"let one = 1; one", 1},
@@ -203,6 +219,7 @@ func TestMemberExpressions(t *testing.T) {
 	tests := []vmTestCase{
 		{"[1,2,3,4].length", 4},
 		{"'HELLO'.lower()", "hello"},
+		{"a={}; a.hello='world'; a['hello']", "world"},
 	}
 
 	runVmTests(t, tests)
