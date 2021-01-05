@@ -65,6 +65,7 @@ func (h *Hash) MarshalJSON() (text []byte, err error) {
 	for _, v := range h.Pairs {
 		b, _ := v.MarshalJSON()
 		buf.Write(b)
+		buf.Write([]byte{','})
 	}
 
 	b := buf.Bytes()
