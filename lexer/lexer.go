@@ -51,7 +51,13 @@ func (l *Lexer) NextToken() token.Token {
 	case '*':
 		tok = newToken(token.Asterisk, l.ch)
 	case '/':
-		tok = newToken(token.Slash, l.ch)
+		if l.peekChar() == '/' {
+			l.readChar()
+			tok.Type = token.DoubleSlash
+			tok.Literal = l.readComment()
+		} else {
+			tok = newToken(token.Slash, l.ch)
+		}
 	case '%':
 		tok = newToken(token.Percent, l.ch)
 	case '<':
@@ -190,6 +196,17 @@ func (l *Lexer) readString3() string {
 	}
 	result, _ := strconv.Unquote("`" + l.input[pos:l.position] + "`")
 	return result
+}
+
+func (l *Lexer) readComment() string {
+	pos := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '\n' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[pos:l.position]
 }
 
 func (l *Lexer) readNumber() (string, bool) {

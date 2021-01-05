@@ -39,6 +39,7 @@ const (
 	Colon       = ":"
 	DoubleColon = "::"
 	Dot         = "."
+	DoubleSlash = "//"
 
 	LeftParen    = "("
 	RightParen   = ")"

@@ -152,6 +152,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLoadStatement()
 	case token.Iter:
 		return p.parseIterStatement()
+	case token.DoubleSlash:
+		return nil
 	}
 	return p.parseExpressionStatement()
 }
@@ -538,11 +540,11 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 		p.nextToken()
 		key := p.parseExpression(Lowest)
 
-		if _, ok := key.(*ast.Identifier); ok {
-			key = &ast.StringLiteral{
-				Value: key.String(),
-			}
-		}
+		// if _, ok := key.(*ast.Identifier); ok {
+		// 	key = &ast.StringLiteral{
+		// 		Value: key.String(),
+		// 	}
+		// }
 
 		if !p.expectPeek(token.Colon) {
 			return nil
