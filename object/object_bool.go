@@ -22,7 +22,7 @@ func (b *Boolean) HashKey() HashKey {
 		value = "f"
 	}
 
-	return HashKey{Type: b.Type(), Value: value, Key: b}
+	return HashKey{Type: b.Type(), Value: value}
 }
 func (b *Boolean) String() string {
 	if b.Value {

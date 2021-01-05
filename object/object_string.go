@@ -14,7 +14,7 @@ type String struct {
 func (s *String) Type() ObjectType { return StringObj }
 func (s *String) Inspect() string  { return s.Value }
 func (s *String) HashKey() HashKey {
-	return HashKey{Type: s.Type(), Value: s.Value, Key: s}
+	return HashKey{Type: s.Type(), Value: s.Value}
 }
 func (s *String) String() string { return s.Value }
 func (s *String) MarshalJSON() (text []byte, err error) {
