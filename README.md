@@ -1,12 +1,12 @@
-# Status
-
-[![Build Status](https://travis-ci.com/dreblang/core.svg?branch=master)](https://travis-ci.com/dreblang/core)
-
 # Dreblang core
 
 Compiler written in Golang to learn about the concepts. This is based on the book called **'Writing a Compiler in Go'** by **Thorsten Ball**. Starting from what the book offers, additional data types and features has been added.
 
-> This an experimental language, not to be used in production.
+> This an experimental language, use at your own risk. Language features and syntaxes are subject to change.
+
+## Build Status
+
+[![Build Status](https://travis-ci.com/dreblang/core.svg?branch=master)](https://travis-ci.com/dreblang/core)
 
 ## How to use?
 
