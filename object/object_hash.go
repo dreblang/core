@@ -24,7 +24,17 @@ type HashPair struct {
 }
 
 func (p HashPair) MarshalJSON() (text []byte, err error) {
-	return json.Marshal(p.Value)
+	buf := bytes.NewBuffer([]byte{})
+
+	b, _ := json.Marshal(p.Key)
+	buf.Write(b)
+
+	buf.Write([]byte(":"))
+
+	b, _ = json.Marshal(p.Value)
+	buf.Write(b)
+
+	return buf.Bytes(), nil
 }
 
 type Hash struct {
@@ -49,7 +59,22 @@ func (h *Hash) Inspect() string {
 func (h *Hash) String() string { return "hash" }
 
 func (h *Hash) MarshalJSON() (text []byte, err error) {
-	return json.Marshal(h.Pairs)
+	buf := bytes.NewBuffer([]byte{})
+	buf.Write([]byte("{"))
+
+	for _, v := range h.Pairs {
+		b, _ := v.MarshalJSON()
+		buf.Write(b)
+	}
+
+	b := buf.Bytes()
+	if len(h.Pairs) > 0 {
+		b[len(b)-1] = '}'
+	} else {
+		b = append(b, '}')
+	}
+
+	return b, nil
 }
 
 func (obj *Hash) GetMember(name string) Object {
