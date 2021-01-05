@@ -2,12 +2,19 @@ package compiler
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"path"
 	"plugin"
 	"sort"
+	"strings"
 
 	"github.com/dreblang/core/ast"
 	"github.com/dreblang/core/code"
+	"github.com/dreblang/core/lexer"
 	"github.com/dreblang/core/object"
+	"github.com/dreblang/core/parser"
 )
 
 type Compiler struct {
@@ -496,6 +503,35 @@ func (c *Compiler) Bytecode() *Bytecode {
 	}
 }
 
+func (c *Compiler) searchFile(fname string) *string {
+	// Check in current working directory
+	d, _ := os.Getwd()
+	p := path.Join(d, fname)
+	if _, err := os.Stat(p); !os.IsNotExist(err) {
+		return &p
+	}
+
+	if value, ok := os.LookupEnv("DREB_PATH"); ok {
+		dirs := strings.Split(value, ":")
+		for _, d := range dirs {
+			p := path.Join(d, fname)
+			if _, err := os.Stat(p); !os.IsNotExist(err) {
+				return &p
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *Compiler) SearchPlugin(m string) *string {
+	return c.searchFile(m + ".so")
+}
+
+func (c *Compiler) SearchSource(m string) *string {
+	return c.searchFile(m + ".dreb")
+}
+
 func (c *Compiler) addConstant(obj object.Object) int {
 	for idx, v := range c.constants {
 		if obj.Equals(v) {
@@ -606,9 +642,11 @@ func (c *Compiler) loadModule(m string) {
 	var scope *object.Scope
 	if loader, ok := coreModules[m]; ok {
 		scope = loader()
-	} else {
+	}
+
+	if pluginFile := c.SearchPlugin(m); scope == nil && pluginFile != nil {
 		// TODO: Look for module in search paths
-		plg, err := plugin.Open(m + ".so")
+		plg, err := plugin.Open(*pluginFile)
 		if err != nil {
 			fmt.Println("Plugin error: ", err)
 			return
@@ -620,8 +658,22 @@ func (c *Compiler) loadModule(m string) {
 		}
 		scope = sym.(func() *object.Scope)()
 	}
-	if scope == nil {
+
+	if sourceFile := c.SearchSource(m); scope == nil && sourceFile != nil {
+		text, _ := ioutil.ReadFile(*sourceFile)
+		l := lexer.New(string(text))
+		p := parser.New(l)
+		program := p.ParseProgram()
+
+		err := c.Compile(program)
+		if err != nil {
+			log.Fatalln("Compile error:", err)
+		}
 		return
+	}
+
+	if scope == nil {
+		log.Fatalf("Failed to load scope: [%s], Exiting...\n", m)
 	}
 
 	si := c.addConstant(scope)
