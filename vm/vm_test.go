@@ -186,6 +186,12 @@ func TestHashLiterals(t *testing.T) {
 				(&object.Integer{Value: 6}).HashKey(): 16,
 			},
 		},
+		{
+			"{hello: 'world'}",
+			map[object.HashKey]string{
+				(&object.String{Value: "hello"}).HashKey(): "world",
+			},
+		},
 	}
 
 	runVmTests(t, tests)

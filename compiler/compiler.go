@@ -15,6 +15,7 @@ import (
 	"github.com/dreblang/core/lexer"
 	"github.com/dreblang/core/object"
 	"github.com/dreblang/core/parser"
+	"github.com/dreblang/core/token"
 )
 
 type Compiler struct {
@@ -404,7 +405,15 @@ func (c *Compiler) Compile(node ast.Node) error {
 		for _, k := range keys {
 			err := c.Compile(k)
 			if err != nil {
-				return err
+				err = c.Compile(
+					&ast.StringLiteral{
+						Token: token.Token{},
+						Value: k.String(),
+					},
+				)
+				if err != nil {
+					return err
+				}
 			}
 			err = c.Compile(node.Pairs[k])
 			if err != nil {
