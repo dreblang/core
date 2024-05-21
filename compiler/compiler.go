@@ -114,7 +114,13 @@ func (c *Compiler) Compile(node ast.Node) error {
 			}
 			c.emit(code.OpGreaterOrEqual)
 			return nil
+
 		} else if node.Operator == "=" {
+			var symbol Symbol
+			switch leftNode := node.Left.(type) {
+			case *ast.Identifier:
+				symbol = c.symbolTable.Define(leftNode.String())
+			}
 			err := c.Compile(node.Right)
 			if err != nil {
 				return err
@@ -122,7 +128,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 
 			switch leftNode := node.Left.(type) {
 			case *ast.Identifier:
-				symbol := c.symbolTable.Define(leftNode.String())
 				c.saveSymbol(symbol)
 
 			case *ast.IndexExpression:
